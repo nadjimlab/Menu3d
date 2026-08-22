@@ -1,3 +1,5 @@
+import type * as React from 'react';
+
 export interface Allergen {
   id: string;
   name: string;
@@ -29,6 +31,17 @@ export interface ProductPalette {
   gradient: string;      // linear / radial dynamic CSS background string
 }
 
+export interface Model3DConfig {
+  src: string;              // GLB 3D model file URL / path
+  iosSrc?: string;          // USDZ for Apple Quick Look AR
+  poster?: string;          // Preview image before 3D loads
+  arModes?: string;         // "scene-viewer quick-look webxr"
+  cameraOrbit?: string;     // Initial camera orbit (e.g. "45deg 55deg 2.5m")
+  fieldOfView?: string;     // "30deg"
+  shadowIntensity?: number; // e.g. 1.2
+  autoRotate?: boolean;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -57,6 +70,7 @@ export interface Product {
   customizationGroups: CustomizationGroup[];
   isAvailable: boolean;
   isFeatured?: boolean;
+  model3d?: Model3DConfig;
 }
 
 export interface Category {
@@ -123,3 +137,40 @@ export interface OrderDetails {
   status: OrderStatus;
   estimatedMinutes: number;
 }
+
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'model-viewer': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          src?: string;
+          'ios-src'?: string;
+          poster?: string;
+          alt?: string;
+          ar?: boolean | string;
+          'ar-modes'?: string;
+          'ar-scale'?: string;
+          'camera-controls'?: boolean | string;
+          'touch-action'?: string;
+          'auto-rotate'?: boolean | string;
+          'auto-rotate-delay'?: number | string;
+          'rotation-per-second'?: string;
+          'interaction-prompt'?: string;
+          'shadow-intensity'?: number | string;
+          'shadow-softness'?: number | string;
+          exposure?: number | string;
+          loading?: 'auto' | 'lazy' | 'eager';
+          reveal?: 'auto' | 'interaction' | 'manual';
+          'camera-orbit'?: string;
+          'min-camera-orbit'?: string;
+          'max-camera-orbit'?: string;
+          'field-of-view'?: string;
+          style?: React.CSSProperties;
+          slot?: string;
+        },
+        HTMLElement
+      >;
+    }
+  }
+}
+

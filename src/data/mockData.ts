@@ -200,6 +200,14 @@ export const PRODUCTS: Product[] = [
     ],
     isAvailable: true,
     isFeatured: true,
+    model3d: {
+      src: 'https://modelviewer.dev/shared-assets/models/shishkebab.glb',
+      iosSrc: 'https://modelviewer.dev/shared-assets/models/shishkebab.usdz',
+      arModes: 'scene-viewer quick-look webxr',
+      cameraOrbit: '35deg 65deg 1.8m',
+      shadowIntensity: 1.5,
+      autoRotate: true,
+    },
   },
   {
     id: 'dessert-mille-feuille-classic',

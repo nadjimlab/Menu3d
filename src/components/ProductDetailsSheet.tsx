@@ -14,8 +14,11 @@ import {
   ChefHat,
   HeartPulse,
   Info,
+  Rotate3d,
+  Camera,
 } from 'lucide-react';
 import { Product, CustomizationGroup, SelectedOption } from '../types';
+import { ModelViewer3D } from './ModelViewer3D';
 
 interface ProductDetailsSheetProps {
   product: Product | null;
@@ -55,6 +58,7 @@ export const ProductDetailsSheet: React.FC<ProductDetailsSheetProps> = ({
 
   const [quantity, setQuantity] = useState<number>(1);
   const [specialNotes, setSpecialNotes] = useState<string>('');
+  const [show3DPreview, setShow3DPreview] = useState<boolean>(false);
 
   // Re-sync choices when product changes
   React.useEffect(() => {
@@ -70,6 +74,7 @@ export const ProductDetailsSheet: React.FC<ProductDetailsSheetProps> = ({
     setSelectedChoices(initial);
     setQuantity(1);
     setSpecialNotes('');
+    setShow3DPreview(false);
   }, [product?.id]);
 
   const handleOptionToggle = (group: CustomizationGroup, optionId: string) => {
@@ -196,22 +201,54 @@ export const ProductDetailsSheet: React.FC<ProductDetailsSheetProps> = ({
             {/* Scrollable Body */}
             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6 no-scrollbar">
               {/* Product Mini Header */}
-              <div className="flex items-center gap-4 bg-white/5 p-3.5 rounded-2xl border border-white/10">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-16 h-16 object-contain rounded-xl bg-black/40 p-1"
-                />
-                <div>
-                  <h4 className="text-sm font-bold text-neutral-100">
-                    {isAr ? product.name : product.nameEn}
-                  </h4>
-                  <p className="text-xs text-amber-400 font-mono font-bold mt-0.5">
-                    {product.price} {isAr ? 'دج' : 'DA'}
-                  </p>
-                  <p className="text-[11px] text-neutral-400 mt-0.5">{product.prepTime}</p>
+              <div className="flex items-center justify-between gap-4 bg-white/5 p-3.5 rounded-2xl border border-white/10">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-16 h-16 object-contain rounded-xl bg-black/40 p-1"
+                  />
+                  <div>
+                    <h4 className="text-sm font-bold text-neutral-100">
+                      {isAr ? product.name : product.nameEn}
+                    </h4>
+                    <p className="text-xs text-amber-400 font-mono font-bold mt-0.5">
+                      {product.price} {isAr ? 'دج' : 'DA'}
+                    </p>
+                    <p className="text-[11px] text-neutral-400 mt-0.5">{product.prepTime}</p>
+                  </div>
                 </div>
+
+                {/* 3D / AR Toggle Button in Sheet */}
+                <button
+                  type="button"
+                  onClick={() => setShow3DPreview((prev) => !prev)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                    show3DPreview
+                      ? 'bg-amber-500 text-neutral-950 shadow-lg shadow-amber-500/30'
+                      : 'bg-white/10 hover:bg-white/20 text-amber-300 border border-amber-500/30'
+                  }`}
+                  id="btn-sheet-toggle-3d"
+                >
+                  <Rotate3d className="w-3.5 h-3.5" />
+                  <span>{show3DPreview ? (isAr ? 'إخفاء 3D' : 'Hide 3D') : (isAr ? 'معاينة 3D • AR' : '3D • AR')}</span>
+                </button>
               </div>
+
+              {/* Expandable 3D Model Viewer in Details Sheet */}
+              <AnimatePresence>
+                {show3DPreview && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 260 }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                    className="overflow-hidden"
+                  >
+                    <ModelViewer3D product={product} lang={lang} isCompact={true} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Full Description */}
               <div className="space-y-1.5">

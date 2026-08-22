@@ -15,8 +15,12 @@ import {
   ChevronUp,
   ChevronDown,
   Layers,
+  Rotate3d,
+  Camera,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { Product, StoreInfo, CartItem } from '../types';
+import { ModelViewer3D } from './ModelViewer3D';
 
 interface ProductHeroProps {
   products: Product[];
@@ -49,6 +53,7 @@ export const ProductHero: React.FC<ProductHeroProps> = ({
   const [addedJustNow, setAddedJustNow] = useState<boolean>(false);
   const [slideDirection, setSlideDirection] = useState<'next' | 'prev'>('next');
   const [showCategoryQuickBar, setShowCategoryQuickBar] = useState<boolean>(false);
+  const [is3DMode, setIs3DMode] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Parallax & 3D Tilt calculations
@@ -228,7 +233,7 @@ export const ProductHero: React.FC<ProductHeroProps> = ({
       opacity: 1,
       transition: {
         duration: 0.45,
-        ease: [0.22, 1, 0.36, 1],
+        ease: [0.22, 1, 0.36, 1] as const,
       },
     },
     exit: (dir: 'next' | 'prev') => ({
@@ -237,7 +242,7 @@ export const ProductHero: React.FC<ProductHeroProps> = ({
       opacity: 0,
       transition: {
         duration: 0.38,
-        ease: [0.22, 1, 0.36, 1],
+        ease: [0.22, 1, 0.36, 1] as const,
       },
     }),
   };
@@ -413,12 +418,12 @@ export const ProductHero: React.FC<ProductHeroProps> = ({
             }}
             className="w-full flex flex-col items-center justify-center cursor-grab active:cursor-grabbing will-change-transform"
           >
-            {/* Minimal Floating Badge & Prep Time */}
+            {/* Minimal Floating Badge, Prep Time & 3D/AR Mode Switcher */}
             <motion.div
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.08, duration: 0.3 }}
-              className="flex items-center gap-2 mb-2"
+              className="flex items-center gap-1.5 mb-2 flex-wrap justify-center"
             >
               {product.badge && (
                 <span
@@ -438,9 +443,46 @@ export const ProductHero: React.FC<ProductHeroProps> = ({
                 <Clock className="w-3 h-3 text-amber-400" />
                 <span>{product.prepTime}</span>
               </div>
+
+              {/* 2D vs 3D / AR Toggle */}
+              <div className="flex items-center bg-black/60 p-0.5 rounded-full border border-white/15 backdrop-blur-xl shadow-md">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIs3DMode(false);
+                  }}
+                  className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-all ${
+                    !is3DMode
+                      ? 'bg-white/20 text-white shadow-sm'
+                      : 'text-neutral-400 hover:text-neutral-200'
+                  }`}
+                  id="btn-switch-2d"
+                >
+                  <ImageIcon className="w-3 h-3" />
+                  <span>2D</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIs3DMode(true);
+                  }}
+                  className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-all ${
+                    is3DMode
+                      ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-neutral-950 shadow-md'
+                      : 'text-amber-400 hover:text-amber-300'
+                  }`}
+                  id="btn-switch-3d-ar"
+                >
+                  <Rotate3d className="w-3 h-3" />
+                  <span>3D • AR</span>
+                </button>
+              </div>
             </motion.div>
 
-            {/* PRODUCT HERO IMAGE — Large, object-fit: contain, Seamless Blend (No White Rectangles) */}
+            {/* PRODUCT HERO IMAGE OR INTERACTIVE 3D MODEL VIEWER */}
             <div className="relative w-full aspect-square max-h-[40dvh] sm:max-h-[44dvh] max-w-[340px] sm:max-w-[400px] flex items-center justify-center">
               {/* LAYER 3: Blurred Realistic Elliptical Floor Shadow */}
               <div
@@ -448,23 +490,36 @@ export const ProductHero: React.FC<ProductHeroProps> = ({
                 style={{ backgroundColor: '#000000' }}
               />
 
-              {/* Shared Element Target Container */}
-              <motion.div
-                layoutId={`product-image-container-${product.id}`}
-                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                className="w-full h-full relative flex items-center justify-center"
-              >
-                <motion.img
-                  layoutId={`product-img-${product.id}`}
+              {!is3DMode ? (
+                /* Shared Element Target Container */
+                <motion.div
+                  layoutId={`product-image-container-${product.id}`}
                   transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                  src={product.image}
-                  alt={product.name}
-                  className="max-h-full max-w-full object-contain filter drop-shadow-[0_22px_32px_rgba(0,0,0,0.75)] pointer-events-none will-change-transform"
-                  style={{
-                    transform: 'translateZ(35px)',
-                  }}
-                />
-              </motion.div>
+                  className="w-full h-full relative flex items-center justify-center"
+                >
+                  <motion.img
+                    layoutId={`product-img-${product.id}`}
+                    transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                    src={product.image}
+                    alt={product.name}
+                    className="max-h-full max-w-full object-contain filter drop-shadow-[0_22px_32px_rgba(0,0,0,0.75)] pointer-events-none will-change-transform"
+                    style={{
+                      transform: 'translateZ(35px)',
+                    }}
+                  />
+                </motion.div>
+              ) : (
+                /* Google Model Viewer 3D & AR Component */
+                <div
+                  className="w-full h-full relative z-20"
+                  onClick={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  onTouchMove={(e) => e.stopPropagation()}
+                  onTouchEnd={(e) => e.stopPropagation()}
+                >
+                  <ModelViewer3D product={product} lang={lang} />
+                </div>
+              )}
             </div>
           </motion.div>
         </AnimatePresence>

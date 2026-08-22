@@ -1,6 +1,6 @@
 {
   "name": "DigiMenu",
-  "description": "Cinematic DigiMenu with interactive product discovery, vertical swipe feed, live order sending & confirmation flow, and complete Kitchen & Admin Management Dashboard.",
-  "requestFramePermissions": [],
+  "description": "Cinematic DigiMenu with 3D and Augmented Reality (AR) interactive model viewing, vertical swipe hero feed, live order sending & confirmation flow, and complete Kitchen & Admin Management Dashboard.",
+  "requestFramePermissions": ["camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
