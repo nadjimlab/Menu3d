@@ -33,7 +33,8 @@ export const ModelViewer3D: React.FC<ModelViewer3DProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [loadError, setLoadError] = useState<boolean>(false);
   const [autoRotate, setAutoRotate] = useState<boolean>(true);
-  const [arSupported, setArSupported] = useState<boolean>(false);
+  const [arStatus, setArStatus] = useState<'checking' | 'supported' | 'unsupported'>('checking');
+  const [showArNotice, setShowArNotice] = useState<boolean>(false);
   const [showHint, setShowHint] = useState<boolean>(true);
   const modelViewerRef = useRef<HTMLElement | null>(null);
 
@@ -70,6 +71,8 @@ export const ModelViewer3D: React.FC<ModelViewer3DProps> = ({
   useEffect(() => {
     setIsLoading(true);
     setLoadError(false);
+    setArStatus('checking');
+    setShowArNotice(false);
 
     const viewer = modelViewerRef.current as any;
     if (!viewer) return;
@@ -77,21 +80,25 @@ export const ModelViewer3D: React.FC<ModelViewer3DProps> = ({
     const handleLoad = () => {
       setIsLoading(false);
       setLoadError(false);
-      // Check AR status
-      if (viewer.canActivateAR) {
-        setArSupported(true);
-      }
+      // AR is an optional enhancement; the 3D viewer remains the default experience.
+      setArStatus(viewer.canActivateAR ? 'supported' : 'unsupported');
     };
 
     const handleError = () => {
       setIsLoading(false);
-      // If glb fails, fallback gracefully
+      setArStatus('unsupported');
+      // If the GLB fails, fallback gracefully to the product image.
       setLoadError(true);
     };
 
     const handleArStatus = (event: any) => {
-      if (event.detail.status === 'session-started') {
-        console.log('AR Session started');
+      const status = event.detail?.status;
+      if (status === 'session-started') {
+        setShowArNotice(false);
+      }
+      if (status === 'failed') {
+        setArStatus('unsupported');
+        setShowArNotice(true);
       }
     };
 
@@ -102,6 +109,7 @@ export const ModelViewer3D: React.FC<ModelViewer3DProps> = ({
     // Timeout safety fallback: don't leave loading spinner forever
     const timer = setTimeout(() => {
       setIsLoading(false);
+      setArStatus((current) => (current === 'checking' ? 'unsupported' : current));
     }, 4000);
 
     return () => {
@@ -110,7 +118,7 @@ export const ModelViewer3D: React.FC<ModelViewer3DProps> = ({
       viewer.removeEventListener('error', handleError);
       viewer.removeEventListener('ar-status', handleArStatus);
     };
-  }, [product.id, modelSrc]);
+  }, [product.id, modelSrc, iosSrc]);
 
   // Hide hint after 4 seconds
   useEffect(() => {
@@ -127,10 +135,24 @@ export const ModelViewer3D: React.FC<ModelViewer3DProps> = ({
     }
   };
 
-  const handleLaunchAR = () => {
+  const handleLaunchAR = async () => {
+    if (arStatus !== 'supported') {
+      setShowArNotice(true);
+      return;
+    }
+
     const viewer = modelViewerRef.current as any;
-    if (viewer && viewer.activateAR) {
-      viewer.activateAR();
+    if (!viewer?.activateAR) {
+      setArStatus('unsupported');
+      setShowArNotice(true);
+      return;
+    }
+
+    try {
+      await viewer.activateAR();
+    } catch {
+      setArStatus('unsupported');
+      setShowArNotice(true);
     }
   };
 
@@ -178,16 +200,18 @@ export const ModelViewer3D: React.FC<ModelViewer3DProps> = ({
             cursor: 'grab',
           }}
         >
-          {/* Custom AR Button inside model-viewer slot */}
-          <button
-            slot="ar-button"
-            onClick={handleLaunchAR}
-            className="absolute top-4 right-4 z-20 flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs shadow-xl shadow-amber-500/25 transition-all duration-200 active:scale-95"
-            id="btn-ar-native-launch"
-          >
-            <Camera className="w-4 h-4" />
-            <span>{isAr ? 'عرض في غرفتك (AR)' : 'View in AR'}</span>
-          </button>
+          {/* AR is shown only after model-viewer confirms that the device supports it. */}
+          {arStatus === 'supported' && (
+            <button
+              slot="ar-button"
+              onClick={handleLaunchAR}
+              className="absolute top-4 right-4 z-20 flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs shadow-xl shadow-amber-500/25 transition-all duration-200 active:scale-95"
+              id="btn-ar-native-launch"
+            >
+              <Camera className="w-4 h-4" />
+              <span>{isAr ? 'عرض في غرفتك (AR)' : 'View in AR'}</span>
+            </button>
+          )}
         </model-viewer>
       ) : (
         /* Fallback: Interactive 360 Spin Visual if remote GLB is blocked */
@@ -237,6 +261,23 @@ export const ModelViewer3D: React.FC<ModelViewer3DProps> = ({
         )}
       </AnimatePresence>
 
+      {/* Explain why 3D remains available when ARCore is unavailable. */}
+      <AnimatePresence>
+        {showArNotice && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            className="absolute bottom-16 inset-x-4 z-30 mx-auto max-w-sm rounded-2xl border border-amber-400/25 bg-black/85 px-4 py-3 text-center text-xs text-neutral-200 shadow-2xl backdrop-blur-xl"
+            role="status"
+          >
+            {isAr
+              ? 'الواقع المعزز غير متاح على هذا الجهاز، لكن يمكنك مشاهدة المنتج ثلاثي الأبعاد وتدويره.'
+              : 'AR is unavailable on this device, but you can still view and rotate the 3D model.'}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Floating 3D Control Bar (Bottom/Top) */}
       <div className="absolute bottom-3 inset-x-3 z-20 flex items-center justify-between pointer-events-auto">
         <div className="flex items-center gap-1.5 bg-black/70 backdrop-blur-xl p-1 rounded-2xl border border-white/15 shadow-xl">
@@ -264,16 +305,26 @@ export const ModelViewer3D: React.FC<ModelViewer3DProps> = ({
           </button>
         </div>
 
-        {/* Direct AR Action Pill */}
-        <button
-          onClick={handleLaunchAR}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-neutral-950 font-bold text-xs shadow-lg shadow-amber-500/20 transition-all active:scale-95"
-          title={isAr ? 'معاينة في الواقع المعزز على طاولتك' : 'Augmented Reality'}
-          id="btn-ar-action-trigger"
-        >
-          <Camera className="w-3.5 h-3.5" />
-          <span>{isAr ? 'عرض AR على الطاولة' : 'AR On Table'}</span>
-        </button>
+        {/* AR is optional; this neutral status pill is the fallback action on unsupported devices. */}
+        {arStatus === 'supported' ? (
+          <button
+            onClick={handleLaunchAR}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-neutral-950 font-bold text-xs shadow-lg shadow-amber-500/20 transition-all active:scale-95"
+            title={isAr ? 'معاينة في الواقع المعزز على طاولتك' : 'Augmented Reality'}
+            id="btn-ar-action-trigger"
+          >
+            <Camera className="w-3.5 h-3.5" />
+            <span>{isAr ? 'عرض AR على الطاولة' : 'AR On Table'}</span>
+          </button>
+        ) : (
+          <div
+            className="flex items-center gap-1.5 rounded-2xl border border-white/10 bg-black/60 px-3 py-2 text-xs font-medium text-neutral-300"
+            title={isAr ? 'العرض ثلاثي الأبعاد متاح على جميع الأجهزة' : '3D viewing is available on all devices'}
+          >
+            <View className="h-3.5 w-3.5 text-amber-400" />
+            <span>{isAr ? 'عرض 3D متاح' : '3D View Available'}</span>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -53,7 +53,8 @@ export const ProductHero: React.FC<ProductHeroProps> = ({
   const [addedJustNow, setAddedJustNow] = useState<boolean>(false);
   const [slideDirection, setSlideDirection] = useState<'next' | 'prev'>('next');
   const [showCategoryQuickBar, setShowCategoryQuickBar] = useState<boolean>(false);
-  const [is3DMode, setIs3DMode] = useState<boolean>(false);
+  // Start with the interactive 3D experience; 2D remains available as a fallback.
+  const [is3DMode, setIs3DMode] = useState<boolean>(true);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Parallax & 3D Tilt calculations
