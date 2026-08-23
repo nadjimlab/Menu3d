@@ -27,8 +27,8 @@ Use **Node.js 24** for CI and local development. Node.js 22 or newer is supporte
 ## Getting started
 
 ```bash
-git clone https://github.com/nadjimlab/Menu3d.git
-cd Menu3d
+git clone https://github.com/nadjimlab/showly.git
+cd showly
 npm ci
 npm run dev
 ```
@@ -71,7 +71,7 @@ Every push to `main` or `master`, every pull request targeting those branches, a
 
 ## Deployment
 
-The production site is deployed automatically to [GitHub Pages](https://nadjimlab.github.io/Menu3d/) whenever a change is pushed to `main`. The public Showly landing page is available at the root, demo tenants use `?store=<slug>` or `/s/<slug>`, and the workspace is available at `/admin`. GitHub Pages hosts the frontend MVP; production multi-tenant data and authentication should move to a backend before commercial launch.
+The production site is deployed automatically to [GitHub Pages](https://nadjimlab.github.io/showly/) whenever a change is pushed to `main`. The public Showly landing page is available at the root, demo tenants use `?store=<slug>` or `/s/<slug>`, and the workspace is available at `/admin`. GitHub Pages hosts the frontend MVP; production multi-tenant data and authentication should move to a backend before commercial launch.
 
 ## Data and external services
 
