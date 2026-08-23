@@ -1,7 +1,7 @@
 import { SHOWLY_STORES } from './data/mockData';
 import { ShowlyAdminDashboard } from './components/ShowlyAdminDashboard';
 import { ShowlyLanding } from './components/ShowlyLanding';
-import { ShowlyStorefront } from './components/ShowlyStorefront';
+import { ShowlyExperienceViewer } from './components/ShowlyExperienceViewer';
 
 export default function App() {
   const params = new URLSearchParams(window.location.search);
@@ -12,6 +12,6 @@ export default function App() {
   const selectedStore = SHOWLY_STORES.find((store) => store.slug === requestedSlug);
 
   if (isAdmin) return <ShowlyAdminDashboard />;
-  if (selectedStore) return <ShowlyStorefront store={selectedStore} />;
+  if (selectedStore) return <ShowlyExperienceViewer store={selectedStore} />;
   return <ShowlyLanding />;
 }
