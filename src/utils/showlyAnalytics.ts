@@ -1,4 +1,4 @@
-export type ShowlyEvent = 'store_view' | 'product_view' | 'whatsapp_click' | 'share_click';
+export type ShowlyEvent = 'store_view' | 'product_view' | 'whatsapp_click' | 'share_click' | 'cart_add' | 'cart_open' | 'order_confirmed';
 
 const keyFor = (storeSlug: string, event: ShowlyEvent) => `showly:analytics:${storeSlug}:${event}`;
 
@@ -20,5 +20,7 @@ export function readShowlyStoreMetrics(storeSlug: string, defaults: { views: num
   const productViews = readShowlyEvent(storeSlug, 'product_view');
   const whatsappClicks = readShowlyEvent(storeSlug, 'whatsapp_click');
   const shareClicks = readShowlyEvent(storeSlug, 'share_click');
-  return { views, interactions: Math.max(defaults.interactions, productViews + whatsappClicks + shareClicks) };
+  const cartAdds = readShowlyEvent(storeSlug, 'cart_add');
+  const orderConfirmed = readShowlyEvent(storeSlug, 'order_confirmed');
+  return { views, interactions: Math.max(defaults.interactions, productViews + whatsappClicks + shareClicks + cartAdds + orderConfirmed) };
 }
