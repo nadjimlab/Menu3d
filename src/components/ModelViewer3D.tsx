@@ -30,7 +30,7 @@ export const ModelViewer3D: React.FC<ModelViewer3DProps> = ({
   isCompact = false,
 }) => {
   const isAr = lang === 'ar';
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(() => Boolean(product.model3d?.src));
   const [loadError, setLoadError] = useState<boolean>(false);
   const [autoRotate, setAutoRotate] = useState<boolean>(true);
   const [arStatus, setArStatus] = useState<'checking' | 'supported' | 'unsupported'>('checking');
@@ -38,44 +38,28 @@ export const ModelViewer3D: React.FC<ModelViewer3DProps> = ({
   const [showHint, setShowHint] = useState<boolean>(true);
   const modelViewerRef = useRef<HTMLElement | null>(null);
 
-  // Model sources: ensure absolute valid CDN URL or fallback to reliable Google 3D model
-  const resolveModelSrc = (src?: string) => {
-    if (src && (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:'))) {
-      return src;
-    }
-    // Reliable 3D food and beverage model assets
-    if (product.id.includes('croissant') || product.category === 'desserts' || product.category === 'crepes') {
-      return 'https://modelviewer.dev/shared-assets/models/shishkebab.glb';
-    }
-    if (product.id.includes('coffee') || product.id.includes('latte') || product.category === 'coffee') {
-      return 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
-    }
-    return 'https://modelviewer.dev/shared-assets/models/shishkebab.glb';
-  };
-
-  const resolveIosSrc = (src?: string) => {
-    if (src && (src.startsWith('http://') || src.startsWith('https://'))) {
-      return src;
-    }
-    if (product.id.includes('croissant') || product.category === 'desserts') {
-      return 'https://modelviewer.dev/shared-assets/models/shishkebab.usdz';
-    }
-    return 'https://modelviewer.dev/shared-assets/models/Astronaut.usdz';
-  };
-
-  const modelSrc = resolveModelSrc(product.model3d?.src);
-  const iosSrc = resolveIosSrc(product.model3d?.iosSrc);
+  // Never substitute a different product's demo model. A 3D model is valid only
+  // when the product explicitly provides a remote GLB/data source.
+  const isValidAssetUrl = (src?: string) =>
+    Boolean(src && /^(https?:\/\/|data:)/.test(src));
+  const modelSrc = isValidAssetUrl(product.model3d?.src)
+    ? product.model3d?.src
+    : undefined;
+  const iosSrc = isValidAssetUrl(product.model3d?.iosSrc)
+    ? product.model3d?.iosSrc
+    : undefined;
+  const hasVerifiedModel = Boolean(modelSrc);
   const posterSrc = product.model3d?.poster || product.image;
 
   // Listen to model-viewer load and error events
   useEffect(() => {
-    setIsLoading(true);
-    setLoadError(false);
-    setArStatus('checking');
+    setIsLoading(hasVerifiedModel);
+    setLoadError(!hasVerifiedModel);
+    setArStatus('unsupported');
     setShowArNotice(false);
 
     const viewer = modelViewerRef.current as any;
-    if (!viewer) return;
+    if (!viewer || !hasVerifiedModel) return;
 
     const handleLoad = () => {
       setIsLoading(false);
@@ -118,7 +102,7 @@ export const ModelViewer3D: React.FC<ModelViewer3DProps> = ({
       viewer.removeEventListener('error', handleError);
       viewer.removeEventListener('ar-status', handleArStatus);
     };
-  }, [product.id, modelSrc, iosSrc]);
+  }, [product.id, modelSrc, iosSrc, hasVerifiedModel]);
 
   // Hide hint after 4 seconds
   useEffect(() => {
@@ -170,7 +154,7 @@ export const ModelViewer3D: React.FC<ModelViewer3DProps> = ({
       />
 
       {/* Model Viewer Native Web Component */}
-      {!loadError ? (
+      {!loadError && hasVerifiedModel ? (
         <model-viewer
           ref={modelViewerRef as any}
           src={modelSrc}
@@ -214,17 +198,16 @@ export const ModelViewer3D: React.FC<ModelViewer3DProps> = ({
           )}
         </model-viewer>
       ) : (
-        /* Fallback: Interactive 360 Spin Visual if remote GLB is blocked */
         <div className="relative w-full h-full flex flex-col items-center justify-center p-6 text-center">
           <motion.img
             src={product.image}
             alt={product.name}
-            animate={{ rotateY: [0, 360] }}
-            transition={{ repeat: Infinity, duration: 18, ease: 'linear' }}
-            className="max-h-[60%] max-w-[70%] object-contain drop-shadow-[0_20px_35px_rgba(0,0,0,0.8)] filter"
+            animate={{ scale: [1, 1.025, 1] }}
+            transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
+            className="max-h-[68%] max-w-[82%] rounded-2xl object-contain drop-shadow-[0_20px_35px_rgba(0,0,0,0.8)] filter"
           />
-          <p className="text-xs text-neutral-400 mt-3">
-            {isAr ? 'عرض مجسم ثلاثي الأبعاد تفاعلي 360°' : '360° Interactive View'}
+          <p className="mt-3 text-xs text-neutral-300">
+            {isAr ? 'الصورة الأصلية للمنتج — لا يوجد نموذج 3D مطابق بعد' : 'Original product image — matching 3D model not available yet'}
           </p>
         </div>
       )}
