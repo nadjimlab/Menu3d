@@ -38,6 +38,7 @@ export const SHOWLY_STORES: ShowlyStore[] = [
     views: 2840,
     interactions: 712,
     productsCount: 12,
+    productIds: ['crepe-strawberry-chocolate', 'croissant-pistachio-supreme', 'dessert-mille-feuille-classic', 'coffee-spanish-latte', 'mocktail-passion-dragon', 'waffle-lotus-crunch', 'dessert-kunafa-cheese', 'coffee-v60-ethiopia', 'croissant-almond-cream', 'mocktail-berry-acai', 'dessert-tiramisu-classico', 'coffee-matcha-latte'],
   },
   {
     id: 'atelier-nova',
@@ -60,7 +61,8 @@ export const SHOWLY_STORES: ShowlyStore[] = [
     isPublished: true,
     views: 1640,
     interactions: 438,
-    productsCount: 24,
+    productsCount: 6,
+    productIds: ['nova-satin-set', 'nova-structured-bag', 'nova-studio-sneakers', 'nova-silk-scarf', 'nova-denim-jacket', 'nova-minimal-watch'],
   },
   {
     id: 'form-studio',
@@ -82,7 +84,8 @@ export const SHOWLY_STORES: ShowlyStore[] = [
     isPublished: true,
     views: 920,
     interactions: 188,
-    productsCount: 18,
+    productsCount: 6,
+    productIds: ['form-lounge-chair', 'form-oak-console', 'form-cloud-sofa', 'form-arc-lamp', 'form-stone-table', 'form-woven-vase'],
   },
 ];
 
@@ -840,6 +843,32 @@ export const PRODUCTS: Product[] = [
     isAvailable: true,
   },
 ];
+
+const cloneProduct = (template: Product, overrides: Partial<Product>): Product => ({ ...template, ...overrides });
+
+const ATELIER_PRODUCTS: Product[] = [
+  cloneProduct(PRODUCTS[0], { id: 'nova-satin-set', name: 'طقم ساتان ليلي', nameEn: 'Midnight Satin Set', shortDesc: 'قميص ساتان انسيابي مع بنطال واسع لإطلالة هادئة ومميزة.', fullDesc: 'طقم ساتان فاخر بقصة مريحة ولمعة ناعمة، مصمم للانتقال من المناسبات المسائية إلى الإطلالات اليومية.', price: 8900, category: 'fashion', image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1000&q=85', badge: 'اختيار نوفا', ingredients: ['ساتان فاخر', 'قصة واسعة', 'مقاسات S إلى XL'], palette: { ...PRODUCTS[0].palette, primary: '#a855f7', accent: '#d8b4fe', textColor: '#f3e8ff' } }),
+  cloneProduct(PRODUCTS[1], { id: 'nova-structured-bag', name: 'حقيبة نوفا المنظمة', nameEn: 'Nova Structured Bag', shortDesc: 'حقيبة جلدية عملية بتفاصيل معدنية ولمسة هندسية.', fullDesc: 'حقيبة منظمة من جلد نباتي متين، بمساحة داخلية ذكية وحزام قابل للتعديل للاستخدام اليومي.', price: 6200, category: 'accessories', image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=1000&q=85', badge: 'الأكثر طلباً', ingredients: ['جلد نباتي', 'حزام قابل للتعديل', 'جيب داخلي بسحاب'], palette: { ...PRODUCTS[1].palette, primary: '#7c3aed', accent: '#c4b5fd', textColor: '#f5f3ff' } }),
+  cloneProduct(PRODUCTS[2], { id: 'nova-studio-sneakers', name: 'أحذية ستوديو اليومية', nameEn: 'Studio Everyday Sneakers', shortDesc: 'حذاء خفيف بتصميم نظيف وراحة تدوم طوال اليوم.', fullDesc: 'حذاء يومي بخطوط بسيطة ونعل مرن، يجمع بين الراحة والهوية الهادئة لعلامة Atelier Nova.', price: 7800, category: 'shoes', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1000&q=85', badge: 'جديد', ingredients: ['جلد ناعم', 'نعل مرن', 'مقاسات 36 إلى 44'], palette: { ...PRODUCTS[2].palette, primary: '#db2777', accent: '#f9a8d4', textColor: '#fdf2f8' } }),
+  cloneProduct(PRODUCTS[3], { id: 'nova-silk-scarf', name: 'وشاح حرير مطبوع', nameEn: 'Printed Silk Scarf', shortDesc: 'وشاح حريري خفيف بألوان فنية يكمّل الإطلالة.', fullDesc: 'وشاح من الحرير الناعم بطباعة فنية محدودة، يمكن تنسيقه حول العنق أو الحقيبة.', price: 3400, category: 'accessories', image: 'https://images.unsplash.com/photo-1601924994987-69e26d50dc26?auto=format&fit=crop&w=1000&q=85', badge: 'إصدار محدود', ingredients: ['حرير طبيعي', 'طباعة فنية', 'مقاس 90 × 90 سم'], palette: { ...PRODUCTS[3].palette, primary: '#be123c', accent: '#fda4af', textColor: '#fff1f2' } }),
+  cloneProduct(PRODUCTS[4], { id: 'nova-denim-jacket', name: 'جاكيت دينم خام', nameEn: 'Raw Denim Jacket', shortDesc: 'جاكيت دينم بقصة مستقيمة وتفاصيل عملية.', fullDesc: 'جاكيت دينم خام بقصة مستقيمة وأزرار معدنية، قطعة أساسية مصممة لتدوم وتتطور مع الوقت.', price: 9600, category: 'fashion', image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=1000&q=85', badge: 'أساسي', ingredients: ['دينم قطني', 'أزرار معدنية', 'قصة مستقيمة'], palette: { ...PRODUCTS[4].palette, primary: '#2563eb', accent: '#93c5fd', textColor: '#eff6ff' } }),
+  cloneProduct(PRODUCTS[5], { id: 'nova-minimal-watch', name: 'ساعة مينيمال فضية', nameEn: 'Silver Minimal Watch', shortDesc: 'ساعة يومية بقرص واضح وسوار معدني أنيق.', fullDesc: 'ساعة بتصميم مينيمال وقرص واضح، مصممة لتكون تفصيلاً هادئاً في كل إطلالة.', price: 5400, category: 'accessories', image: 'https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&w=1000&q=85', badge: 'مختارة', ingredients: ['سوار ستانلس ستيل', 'زجاج مقاوم للخدش', 'مقاومة للماء'], palette: { ...PRODUCTS[5].palette, primary: '#475569', accent: '#cbd5e1', textColor: '#f8fafc' } }),
+];
+
+const FORM_PRODUCTS: Product[] = [
+  cloneProduct(PRODUCTS[6], { id: 'form-lounge-chair', name: 'كرسي Lounge المنحني', nameEn: 'Curved Lounge Chair', shortDesc: 'كرسي مريح بخطوط ناعمة يضيف شخصية هادئة للمكان.', fullDesc: 'كرسي Lounge بتنجيد عميق وقاعدة منحوتة، يوازن بين الراحة اليومية وحضور القطعة الفنية.', price: 48500, category: 'seating', image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1000&q=85', badge: 'أيقونة Form', ingredients: ['قماش كتاني', 'إسفنج عالي الكثافة', 'قاعدة خشب طبيعي'], palette: { ...PRODUCTS[6].palette, primary: '#0f766e', accent: '#5eead4', textColor: '#ccfbf1' } }),
+  cloneProduct(PRODUCTS[7], { id: 'form-oak-console', name: 'كونسول البلوط الهادئ', nameEn: 'Quiet Oak Console', shortDesc: 'كونسول من خشب البلوط بتخزين مخفي وتصميم متوازن.', fullDesc: 'كونسول من بلوط طبيعي معتّق، بأدراج مخفية وحواف ناعمة يناسب المداخل ومساحات المعيشة.', price: 72000, category: 'tables', image: 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1000&q=85', badge: 'خشب طبيعي', ingredients: ['بلوط طبيعي', 'تشطيب زيتي', 'أدراج دفع ناعم'], palette: { ...PRODUCTS[7].palette, primary: '#a16207', accent: '#facc15', textColor: '#fef9c3' } }),
+  cloneProduct(PRODUCTS[8], { id: 'form-cloud-sofa', name: 'أريكة Cloud بثلاثة مقاعد', nameEn: 'Cloud Three-Seater Sofa', shortDesc: 'أريكة رحبة بوسائد عميقة وملمس ناعم.', fullDesc: 'أريكة Cloud بثلاثة مقاعد، بتنجيد مريح وحضور هادئ يجعلها مركزاً طبيعياً لغرفة المعيشة.', price: 168000, category: 'seating', image: 'https://images.unsplash.com/photo-1550254478-ead40cc54513?auto=format&fit=crop&w=1000&q=85', badge: 'الأكثر طلباً', ingredients: ['قماش بوكلية', 'وسائد قابلة للإزالة', 'هيكل خشبي متين'], palette: { ...PRODUCTS[8].palette, primary: '#0e7490', accent: '#67e8f9', textColor: '#cffafe' } }),
+  cloneProduct(PRODUCTS[9], { id: 'form-arc-lamp', name: 'مصباح Arc المقوّس', nameEn: 'Arc Floor Lamp', shortDesc: 'مصباح أرضي يمنح الضوء طبقات دافئة ومساحة أكثر هدوءاً.', fullDesc: 'مصباح أرضي بقوس معدني طويل وقاعدة حجرية، يمنح الإضاءة المناسبة للقراءة والاسترخاء.', price: 29500, category: 'lighting', image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=1000&q=85', badge: 'إضاءة', ingredients: ['معدن مطلي', 'قاعدة رخامية', 'إضاءة LED دافئة'], palette: { ...PRODUCTS[9].palette, primary: '#ea580c', accent: '#fdba74', textColor: '#ffedd5' } }),
+  cloneProduct(PRODUCTS[10], { id: 'form-stone-table', name: 'طاولة حجرية جانبية', nameEn: 'Stone Side Table', shortDesc: 'طاولة جانبية صغيرة بسطح حجري وحضور منحوت.', fullDesc: 'طاولة جانبية بسطح من الحجر الطبيعي وقاعدة هندسية، مناسبة بجانب الأريكة أو السرير.', price: 34000, category: 'tables', image: 'https://images.unsplash.com/photo-1532372320572-cda25653a26d?auto=format&fit=crop&w=1000&q=85', badge: 'قطعة مميزة', ingredients: ['حجر طبيعي', 'قاعدة فولاذية', 'تشطيب مطفي'], palette: { ...PRODUCTS[10].palette, primary: '#475569', accent: '#94a3b8', textColor: '#f1f5f9' } }),
+  cloneProduct(PRODUCTS[11], { id: 'form-woven-vase', name: 'مزهرية Woven المنسوجة', nameEn: 'Woven Wabi Vase', shortDesc: 'مزهرية يدوية تضيف ملمساً طبيعياً إلى الرفوف والطاولات.', fullDesc: 'مزهرية بتفاصيل يدوية وملمس طبيعي، مصممة لتنسجم مع النباتات والزهور الجافة.', price: 9800, category: 'decor', image: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=1000&q=85', badge: 'صناعة يدوية', ingredients: ['طين طبيعي', 'نسيج يدوي', 'طبقة حماية مطفية'], palette: { ...PRODUCTS[11].palette, primary: '#15803d', accent: '#86efac', textColor: '#dcfce7' } }),
+];
+
+export const SHOWLY_PRODUCTS: Record<string, Product[]> = {
+  'maison-du-delice': PRODUCTS,
+  'atelier-nova': ATELIER_PRODUCTS,
+  'form-studio': FORM_PRODUCTS,
+};
 
 export const INITIAL_ORDERS: OrderDetails[] = [
   {

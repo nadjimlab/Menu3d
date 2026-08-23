@@ -122,6 +122,7 @@ export interface ShowlyStore {
   views: number;
   interactions: number;
   productsCount: number;
+  productIds: string[];
 }
 
 export interface StoreInfo {

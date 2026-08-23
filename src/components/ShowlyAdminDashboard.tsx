@@ -92,6 +92,7 @@ export function ShowlyAdminDashboard() {
       views: 0,
       interactions: 0,
       productsCount: 0,
+      productIds: [],
     };
     setStores((items) => [...items, newStore]);
     setSelectedStoreId(newStore.id);

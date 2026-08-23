@@ -13,7 +13,7 @@ import {
   Star,
   X,
 } from 'lucide-react';
-import { CATEGORIES, PRODUCTS, RESTAURANT_TABLES } from '../data/mockData';
+import { CATEGORIES, PRODUCTS, RESTAURANT_TABLES, SHOWLY_PRODUCTS } from '../data/mockData';
 import { Product, ShowlyStore } from '../types';
 import { trackShowlyEvent } from '../utils/showlyAnalytics';
 
@@ -23,6 +23,12 @@ const labels = {
   ar: { catalog: 'الكتالوج', discover: 'اكتشف المنتجات', search: 'ابحث في الكتالوج...', all: 'الكل', details: 'التفاصيل', contact: 'تواصل عبر WhatsApp', available: 'متوفر الآن', unavailable: 'غير متوفر حالياً', specs: 'التفاصيل والمواصفات', ingredients: 'المكونات / المواصفات', share: 'مشاركة', save: 'حفظ', table: 'الطاولة', tableFromQr: 'من QR', chooseTable: 'اختر الطاولة', admin: 'الإدارة', back: 'العودة إلى Showly', viewAll: 'عرض الكل', featured: 'مختارات مميزة', quick: 'تجربة سريعة وسهلة', custom: 'مصمم لهويتك', noResults: 'لم نجد نتائج مطابقة.' },
   fr: { catalog: 'Catalogue', discover: 'Découvrez les produits', search: 'Rechercher dans le catalogue...', all: 'Tout', details: 'Détails', contact: 'Contacter via WhatsApp', available: 'Disponible', unavailable: 'Indisponible', specs: 'Détails et caractéristiques', ingredients: 'Composition / caractéristiques', share: 'Partager', save: 'Enregistrer', table: 'Table', tableFromQr: 'via QR', chooseTable: 'Choisir une table', admin: 'Administration', back: 'Retour à Showly', viewAll: 'Voir tout', featured: 'Sélection', quick: 'Simple et rapide', custom: 'À votre image', noResults: 'Aucun résultat.' },
   en: { catalog: 'Catalog', discover: 'Explore the products', search: 'Search the catalog...', all: 'All', details: 'Details', contact: 'Contact on WhatsApp', available: 'Available now', unavailable: 'Currently unavailable', specs: 'Details & specifications', ingredients: 'Ingredients / specifications', share: 'Share', save: 'Save', table: 'Table', tableFromQr: 'via QR', chooseTable: 'Choose table', admin: 'Admin', back: 'Back to Showly', viewAll: 'View all', featured: 'Featured picks', quick: 'Fast and easy', custom: 'Made for your brand', noResults: 'No matching results.' },
+} as const;
+
+const categoryLabels = {
+  ar: { fashion: 'أزياء', accessories: 'إكسسوارات', shoes: 'أحذية', seating: 'جلسات', tables: 'طاولات', lighting: 'إضاءة', decor: 'ديكور', crepes: 'كريب ووافل', bakery: 'كرواسون ومخبوزات', desserts: 'حلويات فاخرة', coffee: 'قهوة مختصة', juices: 'عصائر وموكتيلات' },
+  fr: { fashion: 'Mode', accessories: 'Accessoires', shoes: 'Chaussures', seating: 'Assises', tables: 'Tables', lighting: 'Luminaires', decor: 'Décoration', crepes: 'Crêpes & gaufres', bakery: 'Boulangerie', desserts: 'Desserts', coffee: 'Café', juices: 'Boissons' },
+  en: { fashion: 'Fashion', accessories: 'Accessories', shoes: 'Footwear', seating: 'Seating', tables: 'Tables', lighting: 'Lighting', decor: 'Decor', crepes: 'Crepes & waffles', bakery: 'Bakery', desserts: 'Desserts', coffee: 'Coffee', juices: 'Drinks' },
 } as const;
 
 const industryLabel = {
@@ -49,6 +55,12 @@ export function ShowlyStorefront({ store }: { store: ShowlyStore }) {
   const t = labels[lang];
   const isAr = lang === 'ar';
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  const storeProducts = SHOWLY_PRODUCTS[store.slug] || PRODUCTS;
+  const storeCategories = Array.from(new Set(storeProducts.map((product) => product.category))).map((id) => {
+    const source = CATEGORIES.find((category) => category.id === id);
+    const fallback = categoryLabels[lang][id as keyof typeof categoryLabels.ar];
+    return { id, label: source ? (lang === 'ar' ? source.name : source.nameEn) : fallback || id };
+  });
 
   useEffect(() => {
     document.documentElement.dir = isAr ? 'rtl' : 'ltr';
@@ -57,11 +69,11 @@ export function ShowlyStorefront({ store }: { store: ShowlyStore }) {
     trackShowlyEvent(store.slug, 'store_view');
   }, [isAr, lang, store.nameEn, store.slug, store.views]);
 
-  const filteredProducts = useMemo(() => PRODUCTS.filter((product) => {
+  const filteredProducts = useMemo(() => storeProducts.filter((product) => {
     const matchesQuery = `${product.name} ${product.nameEn} ${product.shortDesc}`.toLowerCase().includes(query.toLowerCase());
     const matchesCategory = activeCategory === 'all' || product.category === activeCategory;
     return matchesQuery && matchesCategory;
-  }), [activeCategory, query]);
+  }), [activeCategory, query, storeProducts]);
 
   const openWhatsApp = (product?: Product) => {
     trackShowlyEvent(store.slug, 'whatsapp_click');
@@ -105,7 +117,7 @@ export function ShowlyStorefront({ store }: { store: ShowlyStore }) {
 
         <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
           <div className="flex flex-col gap-5 border-b border-black/10 pb-6 sm:flex-row sm:items-end sm:justify-between"><div><span className="text-xs font-black uppercase tracking-[.24em] text-black/35">{t.catalog}</span><h2 className="mt-2 text-4xl font-black tracking-[-.05em] sm:text-5xl">{t.discover}</h2></div><div className="flex items-center gap-2 rounded-2xl border border-black/10 bg-white/65 px-3 py-2.5 sm:min-w-[270px]"><Search className="h-4 w-4 text-black/35" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t.search} className="w-full bg-transparent text-sm outline-none placeholder:text-black/30" aria-label={t.search} /></div></div>
-          <div className="mt-6 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">{[{ id: 'all', label: t.all }, ...CATEGORIES.filter((category) => category.id !== 'all').map((category) => ({ id: category.id, label: lang === 'ar' ? category.name : category.nameEn }))].map((category) => <button key={category.id} type="button" onClick={() => setActiveCategory(category.id)} className={`shrink-0 rounded-full border px-4 py-2 text-xs font-bold transition ${activeCategory === category.id ? 'border-black bg-black text-white' : 'border-black/10 bg-white/50 text-black/55 hover:border-black/30 hover:text-black'}`}>{category.label}</button>)}</div>
+          <div className="mt-6 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">{[{ id: 'all', label: t.all }, ...storeCategories].map((category) => <button key={category.id} type="button" onClick={() => setActiveCategory(category.id)} className={`shrink-0 rounded-full border px-4 py-2 text-xs font-bold transition ${activeCategory === category.id ? 'border-black bg-black text-white' : 'border-black/10 bg-white/50 text-black/55 hover:border-black/30 hover:text-black'}`}>{category.label}</button>)}</div>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{filteredProducts.map((product, index) => <article key={product.id} className="group overflow-hidden rounded-[1.6rem] border border-black/8 bg-white shadow-[0_10px_35px_rgba(26,25,18,.05)] transition hover:-translate-y-1 hover:shadow-[0_18px_48px_rgba(26,25,18,.12)]" role="button" tabIndex={0} onClick={() => setSelectedProduct(product)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') setSelectedProduct(product); }}><div className="block w-full text-start"><div className="relative aspect-[1.14] overflow-hidden bg-black/5"><img src={product.image} alt={productName(product)} loading={index < 3 ? 'eager' : 'lazy'} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /><div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2"><span className="rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold backdrop-blur">{product.badge || t.featured}</span><button type="button" onClick={(event) => { event.stopPropagation(); setSaved((current) => current.includes(product.id) ? current.filter((id) => id !== product.id) : [...current, product.id]); }} className="grid h-8 w-8 place-items-center rounded-full bg-white/90 text-black/45 backdrop-blur hover:text-rose-500" aria-label={t.save}><Heart className={`h-4 w-4 ${saved.includes(product.id) ? 'fill-current text-rose-500' : ''}`} /></button></div></div><div className="p-5"><div className="mb-2 flex items-center justify-between gap-3"><h3 className="text-lg font-black leading-tight">{productName(product)}</h3><span className="shrink-0 text-sm font-black">{product.price} <small className="text-[10px] font-bold text-black/40">DA</small></span></div><p className="line-clamp-2 text-sm leading-6 text-black/50">{productDescription(product)}</p><div className="mt-4 flex items-center justify-between text-[11px] text-black/40"><span className="inline-flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />{product.rating} ({product.reviewsCount})</span><span className="font-bold text-black/55">{t.details} <ArrowLeft className="inline h-3 w-3" /></span></div></div></div></article>)}</div>
           {filteredProducts.length === 0 && <div className="rounded-3xl border border-dashed border-black/15 py-16 text-center text-black/45">{t.noResults}</div>}
         </section>
