@@ -1,24 +1,24 @@
-# DigiMenu
+# Showly — Interactive Product Experience
 
-DigiMenu is an Arabic-first digital menu experience for restaurants and cafés. It combines appetite-focused food photography, product customization, table-aware QR ordering, a cart and order-confirmation flow, and a lightweight kitchen and manager dashboard.
+Showly is an Arabic-first, multilingual QR storefront platform for presenting products and services across restaurants, cafés, bakeries, retail, fashion, beauty, furniture, electronics, and service businesses. It combines premium visual presentation, product details, direct WhatsApp contact, shareable store links, and a multi-tenant workspace foundation.
 
-The current application is a client-side prototype powered by mock catalog, store, and order data. It is designed as a polished foundation for a production menu system; persistence, authentication, payment processing, and server-side order delivery are intentionally outside the current scope.
+The current public experience is a polished frontend MVP powered by local demo data. It is intentionally structured so the mock tenant layer can later be replaced with authenticated APIs, a database, object storage, and subscription billing without rebuilding the customer experience.
 
 ## Highlights
 
 | Capability | Description |
 | --- | --- |
-| Product discovery | Browse categories and move through a focused, vertical product experience. |
-| Food presentation | Display real product photography inside premium, appetite-focused visual panels and product cards. |
-| Customization | Remove included ingredients, add optional toppings, add notes, and calculate option-based prices before adding an item to the cart. |
-| Ordering flow | Manage quantities, choose dine-in or takeaway, select a payment method, and receive a live order confirmation view. |
-| Table QR ordering | Generate a separate QR code for each table and assign the table automatically to dine-in orders. |
-| Manager dashboard | Review mock kitchen orders, update statuses, adjust product availability and prices, manage table QR codes, and edit store information. |
-| Arabic-first UI | Arabic RTL is the default, with an English toggle and synchronized document language and direction. |
+| Multi-tenant storefronts | Present several independent stores with their own slug, identity, industry, city, links, and metrics. |
+| Interactive product presentation | Display large product photography, details, availability, specifications, saving, sharing, and mobile-first product cards. |
+| Direct conversion | Contact a store or a specific product on WhatsApp with a pre-filled enquiry message. |
+| Multilingual experience | Arabic RTL, Français, and English copy with synchronized language and direction. |
+| Persistent QR storefronts | Generate one QR per store; the destination stays stable while the catalog can be updated later. |
+| Admin workspace | Manage stores, catalog visibility, QR distribution, links, and baseline engagement signals from a responsive dashboard. |
+| Mobile-first performance | Lightweight UI, lazy-loaded product images, compact interaction patterns, and no unnecessary AI or heavy media runtime. |
 
 ## Tech stack
 
-The project uses React 19, TypeScript, Vite, Tailwind CSS 4, Motion, and Lucide React. Product and store data are currently defined in `src/data/mockData.ts`, while reusable interface sections live under `src/components/`.
+The project uses React 19, TypeScript, Vite, Tailwind CSS 4, Motion, Lucide React, and `qrcode.react`. Tenant and catalog demo data live in `src/data/mockData.ts`, while the public platform, storefront, QR, and admin experiences are modularized under `src/components/`.
 
 ## Requirements
 
@@ -33,7 +33,7 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000` in a browser. The app does not require a local API or a secret for its current mock-data experience.
+Open `http://localhost:3000/` for the Showly landing page, `http://localhost:3000/?store=maison-du-delice` for the live demo storefront, or `http://localhost:3000/admin` for the workspace. The current MVP does not require an API key or local backend.
 
 ## Available commands
 
@@ -53,7 +53,7 @@ Open `http://localhost:3000` in a browser. The app does not require a local API 
 ├── .github/workflows/ci.yml  # Node 24 CI: install, type-check, build
 ├── public/                    # Small public web assets and metadata
 ├── src/
-│   ├── components/            # Product, cart, order, dashboard, and QR UI
+│   ├── components/            # Landing, storefront, product, QR, and admin UI
 │   ├── data/                  # Mock catalog, store, and order data
 │   ├── utils/                 # Shared browser utilities
 │   ├── App.tsx                # Application state and screen flow
@@ -71,7 +71,7 @@ Every push to `main` or `master`, every pull request targeting those branches, a
 
 ## Deployment
 
-The production site is deployed automatically to [GitHub Pages](https://nadjimlab.github.io/Menu3d/) whenever a change is pushed to `main`. The deployment workflow builds the Vite bundle, uploads `dist/` as a Pages artifact, and publishes it through the official GitHub Pages deployment actions. Vite uses `/Menu3d/` as its production base path and `/` during local development, so assets resolve correctly in both environments. The customer route accepts `?table=04&mode=dine-in`; when no table is supplied, the public demo displays a selector for tables 01, 04, 07, and 12. The admin dashboard is isolated behind the direct `/admin` path and is not linked from the public customer interface.
+The production site is deployed automatically to [GitHub Pages](https://nadjimlab.github.io/Menu3d/) whenever a change is pushed to `main`. The public Showly landing page is available at the root, demo tenants use `?store=<slug>` or `/s/<slug>`, and the workspace is available at `/admin`. GitHub Pages hosts the frontend MVP; production multi-tenant data and authentication should move to a backend before commercial launch.
 
 ## Data and external services
 
@@ -79,7 +79,7 @@ The demo catalog references remote Unsplash images. These resources are suitable
 
 ## Production roadmap
 
-A production deployment should add authenticated staff access, a server-side catalog and order store, real-time kitchen updates, input validation at the API boundary, payment-provider integration, rate limiting, and a privacy policy covering customer contact data. The current dashboard is a local demo state and should not be treated as an access-control boundary.
+The next production steps are authenticated staff access, server-side tenant isolation, catalog and media storage, custom domains, WhatsApp event tracking, billing, audit logs, rate limiting, input validation, privacy controls, and role-based permissions. The current admin route is a product preview, not a security boundary.
 
 ## License
 

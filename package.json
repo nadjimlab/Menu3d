@@ -1,8 +1,8 @@
 {
-  "name": "menu3d",
+  "name": "showly",
   "private": true,
   "version": "1.0.0",
-  "description": "Arabic-first digital menu and QR table ordering experience for restaurants and cafés.",
+  "description": "Showly — Interactive Product Experience for products, services, and QR storefronts.",
   "license": "MIT",
   "type": "module",
   "engines": {

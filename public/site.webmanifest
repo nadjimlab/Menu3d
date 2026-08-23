@@ -1,7 +1,7 @@
 {
-  "name": "DigiMenu",
-  "short_name": "DigiMenu",
-  "description": "منيو رقمية احترافية وطلبات QR لكل طاولة",
+  "name": "Showly",
+  "short_name": "Showly",
+  "description": "منصة تفاعلية لعرض المنتجات والخدمات عبر QR Code",
   "lang": "ar",
   "dir": "rtl",
   "display": "standalone",

@@ -98,6 +98,32 @@ export interface RestaurantTable {
   isActive: boolean;
 }
 
+export type ShowlyIndustry = 'restaurant' | 'cafe' | 'bakery' | 'retail' | 'fashion' | 'beauty' | 'furniture' | 'electronics' | 'services';
+
+export interface ShowlyStore {
+  id: string;
+  slug: string;
+  name: string;
+  nameFr: string;
+  nameEn: string;
+  description: string;
+  descriptionFr: string;
+  descriptionEn: string;
+  industry: ShowlyIndustry;
+  city: string;
+  cityEn: string;
+  accent: string;
+  coverImage: string;
+  logoMark: string;
+  phone: string;
+  whatsapp: string;
+  instagram?: string;
+  isPublished: boolean;
+  views: number;
+  interactions: number;
+  productsCount: number;
+}
+
 export interface StoreInfo {
   name: string;
   nameEn: string;
