@@ -15,7 +15,6 @@ import {
   ChevronRight,
   Filter,
   Info,
-  LayoutDashboard,
 } from 'lucide-react';
 import { Product, Category, StoreInfo, CartItem } from '../types';
 
@@ -26,8 +25,6 @@ interface DiscoveryScreenProps {
   cartItems: CartItem[];
   onSelectProduct: (product: Product) => void;
   onOpenCart: () => void;
-  onOpenDashboard?: () => void;
-  activeOrdersCount?: number;
   lang: 'ar' | 'en';
 }
 
@@ -38,8 +35,6 @@ export const DiscoveryScreen: React.FC<DiscoveryScreenProps> = ({
   cartItems,
   onSelectProduct,
   onOpenCart,
-  onOpenDashboard,
-  activeOrdersCount = 0,
   lang,
 }) => {
   const isAr = lang === 'ar';
@@ -127,22 +122,6 @@ export const DiscoveryScreen: React.FC<DiscoveryScreenProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            {onOpenDashboard && (
-              <button
-                onClick={onOpenDashboard}
-                className="relative flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white border border-white/10 transition-all text-xs font-semibold"
-                title={isAr ? 'لوحة تحكم وإدارة المطعم' : 'Admin & Kitchen Dashboard'}
-              >
-                <LayoutDashboard className="w-3.5 h-3.5 text-amber-400" />
-                <span className="hidden sm:inline">{isAr ? 'لوحة التحكم' : 'Dashboard'}</span>
-                {activeOrdersCount > 0 && (
-                  <span className="w-4 h-4 rounded-full bg-rose-500 text-white text-[10px] flex items-center justify-center font-mono font-bold">
-                    {activeOrdersCount}
-                  </span>
-                )}
-              </button>
-            )}
-
             {/* Cart Quick Button */}
             <button
               onClick={onOpenCart}

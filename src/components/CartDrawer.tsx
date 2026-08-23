@@ -203,18 +203,18 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     </div>
 
                     {diningMode === 'dine-in' ? (
-                      <div className="flex items-center justify-between text-xs pt-2 border-t border-white/5">
-                        <span className="text-neutral-400">{isAr ? 'رقم الطاولة:' : 'Table Number:'}</span>
-                        <select
-                          value={tableNumber}
-                          onChange={(e) => setTableNumber(e.target.value)}
-                          className="bg-black/50 text-amber-400 font-mono font-bold text-xs rounded-lg px-2.5 py-1 border border-amber-500/30 focus:outline-none"
-                        >
-                          <option value="01">طاولة 01 (الشرفة)</option>
-                          <option value="04">طاولة 04 (الصالون)</option>
-                          <option value="07">طاولة 07 (VIP)</option>
-                          <option value="12">طاولة 12 (الحديقة)</option>
-                        </select>
+                      <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/5">
+                        <div>
+                          <span className="block text-xs font-bold text-neutral-200">
+                            {isAr ? `طاولة ${tableNumber}` : `Table ${tableNumber}`}
+                          </span>
+                          <span className="text-[11px] text-emerald-300">
+                            {isAr ? 'تم تحديدها تلقائياً من QR' : 'Assigned automatically from QR'}
+                          </span>
+                        </div>
+                        <span className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-[11px] font-bold text-emerald-300">
+                          {isAr ? 'طلب محلي' : 'Dine-in'}
+                        </span>
                       </div>
                     ) : (
                       <div className="space-y-2 pt-2 border-t border-white/5">

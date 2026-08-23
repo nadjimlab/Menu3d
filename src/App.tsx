@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { PRODUCTS, CATEGORIES, STORE_INFO, INITIAL_ORDERS } from './data/mockData';
+import { PRODUCTS, CATEGORIES, STORE_INFO, INITIAL_ORDERS, RESTAURANT_TABLES } from './data/mockData';
 import {
   Product,
   CartItem,
@@ -22,7 +22,18 @@ import { sounds } from './utils/soundEffects';
 
 export default function App() {
   const [lang, setLang] = useState<'ar' | 'en'>('ar');
-  const [storeInfo, setStoreInfo] = useState<StoreInfo>(STORE_INFO);
+  const tableFromQr = new URLSearchParams(window.location.search).get('table');
+  const modeFromQr = new URLSearchParams(window.location.search).get('mode');
+  const initialTable = RESTAURANT_TABLES.some((table) => table.id === tableFromQr)
+    ? tableFromQr!
+    : STORE_INFO.tableNumber;
+  const initialDiningMode = modeFromQr === 'takeaway' ? 'takeaway' : STORE_INFO.diningMode;
+  const isAdminRoute = new URLSearchParams(window.location.search).get('admin') === '1';
+  const [storeInfo, setStoreInfo] = useState<StoreInfo>(() => ({
+    ...STORE_INFO,
+    tableNumber: initialTable,
+    diningMode: initialDiningMode,
+  }));
   const [productsList, setProductsList] = useState<Product[]>(PRODUCTS);
   const [ordersList, setOrdersList] = useState<OrderDetails[]>(INITIAL_ORDERS);
 
@@ -30,6 +41,7 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState<
     'intro' | 'discovery' | 'hero' | 'dashboard'
   >(() => {
+    if (isAdminRoute) return 'dashboard';
     const autoSkip = localStorage.getItem('digimenu_auto_skip');
     return autoSkip === 'true' ? 'discovery' : 'intro';
   });
@@ -254,23 +266,20 @@ export default function App() {
     setStoreInfo((prev) => ({ ...prev, ...updated }));
   };
 
-  const activeOrdersCount = ordersList.filter((o) => o.status === 'received').length;
-
   return (
     <div className="min-h-screen bg-[#07070b] text-neutral-100 flex flex-col antialiased">
-      {/* Top QR Simulator & Language Bar */}
-      <QRSimulatorBar
-        storeInfo={storeInfo}
-        onUpdateTable={(tbl) => setStoreInfo((s) => ({ ...s, tableNumber: tbl }))}
-        onUpdateDiningMode={(mode) => setStoreInfo((s) => ({ ...s, diningMode: mode }))}
-        onResetToIntro={() => setCurrentScreen('intro')}
-        lang={lang}
-        onToggleLang={() => setLang((l) => (l === 'ar' ? 'en' : 'ar'))}
-        onOpenDashboard={() => setCurrentScreen('dashboard')}
-        activeOrdersCount={activeOrdersCount}
-        currentOrder={confirmedOrder}
-        onOpenCurrentOrderModal={() => setIsOrderModalOpen(true)}
-      />
+      {/* Customer header only; the admin dashboard has its own isolated layout. */}
+      {currentScreen !== 'dashboard' && (
+        <QRSimulatorBar
+          storeInfo={storeInfo}
+          onUpdateDiningMode={(mode) => setStoreInfo((s) => ({ ...s, diningMode: mode }))}
+          onResetToIntro={() => setCurrentScreen('intro')}
+          lang={lang}
+          onToggleLang={() => setLang((l) => (l === 'ar' ? 'en' : 'ar'))}
+          currentOrder={confirmedOrder}
+          onOpenCurrentOrderModal={() => setIsOrderModalOpen(true)}
+        />
+      )}
 
       {/* Main Viewport Container */}
       <main className="flex-1 relative overflow-x-hidden">
@@ -308,8 +317,6 @@ export default function App() {
                 cartItems={cartItems}
                 onSelectProduct={handleSelectProduct}
                 onOpenCart={() => setIsCartOpen(true)}
-                onOpenDashboard={() => setCurrentScreen('dashboard')}
-                activeOrdersCount={activeOrdersCount}
                 lang={lang}
               />
             </motion.div>

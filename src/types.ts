@@ -31,17 +31,6 @@ export interface ProductPalette {
   gradient: string;      // linear / radial dynamic CSS background string
 }
 
-export interface Model3DConfig {
-  src: string;              // GLB 3D model file URL / path
-  iosSrc?: string;          // USDZ for Apple Quick Look AR
-  poster?: string;          // Preview image before 3D loads
-  arModes?: string;         // "scene-viewer quick-look webxr"
-  cameraOrbit?: string;     // Initial camera orbit (e.g. "45deg 55deg 2.5m")
-  fieldOfView?: string;     // "30deg"
-  shadowIntensity?: number; // e.g. 1.2
-  autoRotate?: boolean;
-}
-
 export interface Product {
   id: string;
   name: string;
@@ -70,7 +59,6 @@ export interface Product {
   customizationGroups: CustomizationGroup[];
   isAvailable: boolean;
   isFeatured?: boolean;
-  model3d?: Model3DConfig;
 }
 
 export interface Category {
@@ -98,6 +86,16 @@ export interface CartItem {
   specialNotes?: string;
   unitPrice: number;
   totalPrice: number;
+}
+
+export interface RestaurantTable {
+  id: string;
+  label: string;
+  labelEn: string;
+  zone: string;
+  zoneEn: string;
+  seats: number;
+  isActive: boolean;
 }
 
 export interface StoreInfo {

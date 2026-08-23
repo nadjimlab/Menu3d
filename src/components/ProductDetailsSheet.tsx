@@ -14,11 +14,8 @@ import {
   ChefHat,
   HeartPulse,
   Info,
-  Rotate3d,
-  Camera,
 } from 'lucide-react';
 import { Product, CustomizationGroup, SelectedOption } from '../types';
-import { ModelViewer3D } from './ModelViewer3D';
 
 interface ProductDetailsSheetProps {
   product: Product | null;
@@ -58,7 +55,7 @@ export const ProductDetailsSheet: React.FC<ProductDetailsSheetProps> = ({
 
   const [quantity, setQuantity] = useState<number>(1);
   const [specialNotes, setSpecialNotes] = useState<string>('');
-  const [show3DPreview, setShow3DPreview] = useState<boolean>(false);
+  const [removedIngredients, setRemovedIngredients] = useState<string[]>([]);
 
   // Re-sync choices when product changes
   React.useEffect(() => {
@@ -74,7 +71,7 @@ export const ProductDetailsSheet: React.FC<ProductDetailsSheetProps> = ({
     setSelectedChoices(initial);
     setQuantity(1);
     setSpecialNotes('');
-    setShow3DPreview(false);
+    setRemovedIngredients([]);
   }, [product?.id]);
 
   const handleOptionToggle = (group: CustomizationGroup, optionId: string) => {
@@ -119,7 +116,14 @@ export const ProductDetailsSheet: React.FC<ProductDetailsSheetProps> = ({
   const totalPrice = unitPrice * quantity;
 
   const handleAdd = () => {
-    const selectedOptionsList: SelectedOption[] = [];
+    const selectedOptionsList: SelectedOption[] = removedIngredients.map((ingredient) => ({
+      groupId: 'ingredient-removals',
+      groupTitle: isAr ? 'إزالة مكونات' : 'Ingredient removals',
+      optionId: `without-${ingredient}`,
+      optionName: isAr ? `بدون ${ingredient}` : `Without ${ingredient}`,
+      extraPrice: 0,
+    }));
+
     product.customizationGroups.forEach((group) => {
       const selectedOptionIds = selectedChoices[group.id] || [];
       selectedOptionIds.forEach((optId) => {
@@ -219,36 +223,11 @@ export const ProductDetailsSheet: React.FC<ProductDetailsSheetProps> = ({
                   </div>
                 </div>
 
-                {/* 3D / AR Toggle Button in Sheet */}
-                <button
-                  type="button"
-                  onClick={() => setShow3DPreview((prev) => !prev)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                    show3DPreview
-                      ? 'bg-amber-500 text-neutral-950 shadow-lg shadow-amber-500/30'
-                      : 'bg-white/10 hover:bg-white/20 text-amber-300 border border-amber-500/30'
-                  }`}
-                  id="btn-sheet-toggle-3d"
-                >
-                  <Rotate3d className="w-3.5 h-3.5" />
-                  <span>{show3DPreview ? (isAr ? 'إخفاء 3D' : 'Hide 3D') : (isAr ? 'معاينة 3D • AR' : '3D • AR')}</span>
-                </button>
+                <span className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/10 text-amber-300 border border-amber-500/25 text-xs font-bold">
+                  <ChefHat className="w-3.5 h-3.5" />
+                  <span>{isAr ? 'تحضير طازج عند الطلب' : 'Freshly prepared to order'}</span>
+                </span>
               </div>
-
-              {/* Expandable 3D Model Viewer in Details Sheet */}
-              <AnimatePresence>
-                {show3DPreview && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 260 }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                    className="overflow-hidden"
-                  >
-                    <ModelViewer3D product={product} lang={lang} isCompact={true} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
 
               {/* Full Description */}
               <div className="space-y-1.5">
@@ -303,22 +282,60 @@ export const ProductDetailsSheet: React.FC<ProductDetailsSheetProps> = ({
                 </div>
               </div>
 
-              {/* Ingredients List */}
-              <div className="space-y-2">
-                <h5 className="text-xs font-bold text-neutral-300 uppercase tracking-wider">
-                  {isAr ? 'المكونات الأساسية' : 'Key Ingredients'}
-                </h5>
-                <div className="flex flex-wrap gap-1.5">
-                  {product.ingredients.map((ing, idx) => (
-                    <span
-                      key={idx}
-                      className="px-2.5 py-1 rounded-lg bg-white/5 text-neutral-300 border border-white/10 text-xs font-light"
-                    >
-                      {ing}
+              {/* Ingredient controls: customers can remove any included ingredient. */}
+              <div className="space-y-2.5 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h5 className="text-xs font-bold text-neutral-200">
+                      {isAr ? 'مكونات الطبق' : 'Ingredients'}
+                    </h5>
+                    <p className="mt-1 text-[10px] text-neutral-500">
+                      {isAr ? 'اضغط على المكوّن لإزالته من طلبك' : 'Tap an ingredient to remove it from your order'}
+                    </p>
+                  </div>
+                  {removedIngredients.length > 0 && (
+                    <span className="rounded-full bg-rose-500/15 px-2 py-1 text-[10px] font-bold text-rose-300">
+                      {removedIngredients.length} {isAr ? 'مزال' : 'removed'}
                     </span>
-                  ))}
+                  )}
+                </div>
+                <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+                  {product.ingredients.map((ingredient) => {
+                    const isRemoved = removedIngredients.includes(ingredient);
+                    return (
+                      <button
+                        key={ingredient}
+                        type="button"
+                        onClick={() =>
+                          setRemovedIngredients((current) =>
+                            isRemoved
+                              ? current.filter((item) => item !== ingredient)
+                              : [...current, ingredient]
+                          )
+                        }
+                        className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2 text-start text-[11px] transition-all ${
+                          isRemoved
+                            ? 'border-rose-400/40 bg-rose-500/10 text-rose-200'
+                            : 'border-emerald-400/20 bg-emerald-500/10 text-neutral-200 hover:border-amber-400/40'
+                        }`}
+                      >
+                        <span className={isRemoved ? 'line-through opacity-80' : ''}>{ingredient}</span>
+                        <span className="shrink-0 text-[10px] font-bold">
+                          {isRemoved ? (isAr ? 'إضافة' : 'Add back') : isAr ? 'إزالة' : 'Remove'}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
+
+              {/* Optional additions and required choices */}
+              {product.customizationGroups.some((group) => !group.required) && (
+                <div className="flex items-center gap-2 rounded-2xl border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-200">
+                  <Plus className="h-3.5 w-3.5 text-amber-400" />
+                  <span>{isAr ? 'أضف لمستك الخاصة من الخيارات المتاحة أدناه' : 'Add your personal touch from the options below'}</span>
+                </div>
+              )}
 
               {/* Allergens Notice */}
               {product.allergens.length > 0 && (

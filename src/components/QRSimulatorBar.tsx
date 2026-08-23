@@ -1,29 +1,23 @@
 import React from 'react';
-import { QrCode, RotateCcw, UtensilsCrossed, Globe, Sparkles, LayoutDashboard, Clock, ChefHat } from 'lucide-react';
+import { QrCode, RotateCcw, UtensilsCrossed, Globe, Sparkles, Clock, ChefHat } from 'lucide-react';
 import { StoreInfo, OrderDetails } from '../types';
 
 interface QRSimulatorBarProps {
   storeInfo: StoreInfo;
-  onUpdateTable: (table: string) => void;
   onUpdateDiningMode: (mode: 'dine-in' | 'takeaway') => void;
   onResetToIntro: () => void;
   lang: 'ar' | 'en';
   onToggleLang: () => void;
-  onOpenDashboard: () => void;
-  activeOrdersCount: number;
   currentOrder: OrderDetails | null;
   onOpenCurrentOrderModal: () => void;
 }
 
 export const QRSimulatorBar: React.FC<QRSimulatorBarProps> = ({
   storeInfo,
-  onUpdateTable,
   onUpdateDiningMode,
   onResetToIntro,
   lang,
   onToggleLang,
-  onOpenDashboard,
-  activeOrdersCount,
   currentOrder,
   onOpenCurrentOrderModal,
 }) => {
@@ -34,7 +28,7 @@ export const QRSimulatorBar: React.FC<QRSimulatorBarProps> = ({
       <div className="flex items-center gap-2 flex-wrap">
         <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 font-medium">
           <QrCode className="w-3.5 h-3.5 animate-pulse" />
-          <span className="text-[11px]">{isAr ? 'مسح QR طاولة' : 'QR Simulation'}</span>
+          <span className="text-[11px]">{isAr ? 'منيو الطاولة' : 'Table menu'}</span>
         </div>
 
         <div className="flex items-center gap-1 bg-white/5 rounded-lg p-0.5 border border-white/10">
@@ -61,16 +55,9 @@ export const QRSimulatorBar: React.FC<QRSimulatorBarProps> = ({
         </div>
 
         {storeInfo.diningMode === 'dine-in' && (
-          <select
-            value={storeInfo.tableNumber}
-            onChange={(e) => onUpdateTable(e.target.value)}
-            className="bg-neutral-800 text-neutral-200 text-[11px] rounded px-1.5 py-0.5 border border-white/10 focus:outline-none focus:border-amber-500 cursor-pointer"
-          >
-            <option value="01">{isAr ? 'طاولة 01 (شرفة)' : 'Table 01 (Terrace)'}</option>
-            <option value="04">{isAr ? 'طاولة 04 (الصالون)' : 'Table 04 (Lounge)'}</option>
-            <option value="07">{isAr ? 'طاولة 07 (VIP)' : 'Table 07 (VIP)'}</option>
-            <option value="12">{isAr ? 'طاولة 12 (الحديقة)' : 'Table 12 (Garden)'}</option>
-          </select>
+          <span className="rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-bold text-emerald-300">
+            {isAr ? `طاولة ${storeInfo.tableNumber} من QR` : `Table ${storeInfo.tableNumber} via QR`}
+          </span>
         )}
 
         {/* Floating Active Order Tracker Indicator */}
@@ -89,22 +76,6 @@ export const QRSimulatorBar: React.FC<QRSimulatorBarProps> = ({
       </div>
 
       <div className="flex items-center gap-2">
-        {/* Dashboard Access Button */}
-        <button
-          onClick={onOpenDashboard}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition-all text-[11px] font-bold active:scale-95 shadow-sm"
-          title={isAr ? 'فتح لوحة تحكم المطبخ والإدارة' : 'Open Kitchen & Admin Dashboard'}
-          id="btn-open-dashboard"
-        >
-          <LayoutDashboard className="w-3.5 h-3.5 text-amber-400" />
-          <span>{isAr ? 'لوحة التحكم' : 'Dashboard'}</span>
-          {activeOrdersCount > 0 && (
-            <span className="w-4 h-4 rounded-full bg-rose-500 text-white text-[10px] flex items-center justify-center font-mono font-bold">
-              {activeOrdersCount}
-            </span>
-          )}
-        </button>
-
         <button
           onClick={onToggleLang}
           className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white border border-white/10 transition-all text-[11px]"

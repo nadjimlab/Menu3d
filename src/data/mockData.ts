@@ -1,4 +1,6 @@
-import { Category, Product, StoreInfo, OrderDetails } from '../types';
+import {
+  RestaurantTable,
+ Category, Product, StoreInfo, OrderDetails } from '../types';
 
 export const STORE_INFO: StoreInfo = {
   name: 'كافيه ديليس',
@@ -14,6 +16,13 @@ export const STORE_INFO: StoreInfo = {
   rating: 4.9,
   totalProducts: 12,
 };
+
+export const RESTAURANT_TABLES: RestaurantTable[] = [
+  { id: '01', label: 'طاولة 01', labelEn: 'Table 01', zone: 'الشرفة', zoneEn: 'Terrace', seats: 2, isActive: true },
+  { id: '04', label: 'طاولة 04', labelEn: 'Table 04', zone: 'الصالون', zoneEn: 'Lounge', seats: 4, isActive: true },
+  { id: '07', label: 'طاولة 07', labelEn: 'Table 07', zone: 'VIP', zoneEn: 'VIP', seats: 6, isActive: true },
+  { id: '12', label: 'طاولة 12', labelEn: 'Table 12', zone: 'الحديقة', zoneEn: 'Garden', seats: 4, isActive: true },
+];
 
 export const CATEGORIES: Category[] = [
   {

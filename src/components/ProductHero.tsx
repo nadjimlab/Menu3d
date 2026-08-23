@@ -15,12 +15,8 @@ import {
   ChevronUp,
   ChevronDown,
   Layers,
-  Rotate3d,
-  Camera,
-  Image as ImageIcon,
 } from 'lucide-react';
 import { Product, StoreInfo, CartItem } from '../types';
-import { ModelViewer3D } from './ModelViewer3D';
 
 interface ProductHeroProps {
   products: Product[];
@@ -53,8 +49,6 @@ export const ProductHero: React.FC<ProductHeroProps> = ({
   const [addedJustNow, setAddedJustNow] = useState<boolean>(false);
   const [slideDirection, setSlideDirection] = useState<'next' | 'prev'>('next');
   const [showCategoryQuickBar, setShowCategoryQuickBar] = useState<boolean>(false);
-  // Start with the interactive 3D experience; 2D remains available as a fallback.
-  const [is3DMode, setIs3DMode] = useState<boolean>(true);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Parallax & 3D Tilt calculations
@@ -445,82 +439,33 @@ export const ProductHero: React.FC<ProductHeroProps> = ({
                 <span>{product.prepTime}</span>
               </div>
 
-              {/* 2D vs 3D / AR Toggle */}
-              <div className="flex items-center bg-black/60 p-0.5 rounded-full border border-white/15 backdrop-blur-xl shadow-md">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIs3DMode(false);
-                  }}
-                  className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-all ${
-                    !is3DMode
-                      ? 'bg-white/20 text-white shadow-sm'
-                      : 'text-neutral-400 hover:text-neutral-200'
-                  }`}
-                  id="btn-switch-2d"
-                >
-                  <ImageIcon className="w-3 h-3" />
-                  <span>2D</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIs3DMode(true);
-                  }}
-                  className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-all ${
-                    is3DMode
-                      ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-neutral-950 shadow-md'
-                      : 'text-amber-400 hover:text-amber-300'
-                  }`}
-                  id="btn-switch-3d-ar"
-                >
-                  <Rotate3d className="w-3 h-3" />
-                  <span>3D • AR</span>
-                </button>
+              <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/40 border border-white/10 text-[11px] text-neutral-300 backdrop-blur-md">
+                <Sparkles className="w-3 h-3 text-amber-400" />
+                <span>{isAr ? 'صورة أصلية شهية' : 'Original food photography'}</span>
               </div>
             </motion.div>
 
-            {/* PRODUCT HERO IMAGE OR INTERACTIVE 3D MODEL VIEWER */}
+            {/* Appetite-first product photography panel */}
             <div className="relative w-full aspect-square max-h-[40dvh] sm:max-h-[44dvh] max-w-[340px] sm:max-w-[400px] flex items-center justify-center">
-              {/* LAYER 3: Blurred Realistic Elliptical Floor Shadow */}
               <div
-                className="absolute bottom-2 inset-x-8 h-7 rounded-[100%] blur-xl opacity-60 pointer-events-none transform scale-95"
+                className="absolute bottom-2 inset-x-8 h-8 rounded-[100%] blur-xl opacity-70 pointer-events-none transform scale-95"
                 style={{ backgroundColor: '#000000' }}
               />
-
-              {!is3DMode ? (
-                /* Shared Element Target Container */
-                <motion.div
-                  layoutId={`product-image-container-${product.id}`}
+              <motion.div
+                layoutId={`product-image-container-${product.id}`}
+                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                className="relative w-full h-full flex items-center justify-center rounded-[2rem] overflow-hidden border border-white/10 bg-black/20"
+              >
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-white/10 pointer-events-none" />
+                <motion.img
+                  layoutId={`product-img-${product.id}`}
                   transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                  className="w-full h-full relative flex items-center justify-center"
-                >
-                  <motion.img
-                    layoutId={`product-img-${product.id}`}
-                    transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                    src={product.image}
-                    alt={product.name}
-                    className="max-h-full max-w-full object-contain filter drop-shadow-[0_22px_32px_rgba(0,0,0,0.75)] pointer-events-none will-change-transform"
-                    style={{
-                      transform: 'translateZ(35px)',
-                    }}
-                  />
-                </motion.div>
-              ) : (
-                /* Google Model Viewer 3D & AR Component */
-                <div
-                  className="w-full h-full relative z-20"
-                  onClick={(e) => e.stopPropagation()}
-                  onTouchStart={(e) => e.stopPropagation()}
-                  onTouchMove={(e) => e.stopPropagation()}
-                  onTouchEnd={(e) => e.stopPropagation()}
-                >
-                  <ModelViewer3D product={product} lang={lang} />
-                </div>
-              )}
+                  src={product.image}
+                  alt={product.name}
+                  className="relative z-10 max-h-full max-w-full object-contain filter drop-shadow-[0_22px_32px_rgba(0,0,0,0.75)] pointer-events-none will-change-transform"
+                  style={{ transform: 'translateZ(35px)' }}
+                />
+              </motion.div>
             </div>
           </motion.div>
         </AnimatePresence>

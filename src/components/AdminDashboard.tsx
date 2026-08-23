@@ -31,9 +31,11 @@ import {
   CreditCard,
   Banknote,
   Store,
+  QrCode,
 } from 'lucide-react';
 import { OrderDetails, OrderStatus, Product, StoreInfo } from '../types';
 import { sounds } from '../utils/soundEffects';
+import { TableQrManager } from './TableQrManager';
 
 interface AdminDashboardProps {
   orders: OrderDetails[];
@@ -59,7 +61,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   lang,
 }) => {
   const isAr = lang === 'ar';
-  const [activeTab, setActiveTab] = useState<'orders' | 'menu' | 'stats' | 'settings'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'menu' | 'qr' | 'stats' | 'settings'>('orders');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedReceiptOrder, setSelectedReceiptOrder] = useState<OrderDetails | null>(null);
@@ -205,6 +207,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           >
             <Package className="w-3.5 h-3.5" />
             <span>{isAr ? 'إدارة الأصناف' : 'Menu Inventory'}</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('qr')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              activeTab === 'qr'
+                ? 'bg-amber-500 text-neutral-950 shadow-md shadow-amber-500/20'
+                : 'text-neutral-300 hover:text-white hover:bg-white/5'
+            }`}
+            id="tab-admin-qr"
+          >
+            <QrCode className="w-3.5 h-3.5" />
+            <span>{isAr ? 'QR الطاولات' : 'Table QR'}</span>
           </button>
 
           <button
@@ -722,7 +737,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
         )}
 
-        {/* ======================= TAB 3: STATS & ANALYTICS ======================= */}
+        {/* ======================= TAB 3: TABLE QR CODES ======================= */}
+        {activeTab === 'qr' && (
+          <div className="rounded-3xl border border-white/10 bg-[#0d0d13] p-4 sm:p-6">
+            <TableQrManager
+              lang={lang}
+              storeName={isAr ? storeInfo.name : storeInfo.nameEn}
+            />
+          </div>
+        )}
+
+        {/* ======================= TAB 4: STATS & ANALYTICS ======================= */}
         {activeTab === 'stats' && (
           <div className="space-y-6">
             {/* KPI Cards */}
@@ -824,7 +849,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
         )}
 
-        {/* ======================= TAB 4: STORE SETTINGS ======================= */}
+        {/* ======================= TAB 5: STORE SETTINGS ======================= */}
         {activeTab === 'settings' && (
           <div className="max-w-2xl mx-auto bg-[#111118] p-6 rounded-3xl border border-white/10 space-y-6">
             <div>

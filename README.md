@@ -1,6 +1,6 @@
-# DigiMenu 3D
+# DigiMenu
 
-DigiMenu is an immersive digital menu experience for restaurants and cafés. It combines a cinematic product discovery flow with interactive 3D/AR previews, product customization, a cart and order-confirmation flow, and a lightweight kitchen and manager dashboard.
+DigiMenu is an Arabic-first digital menu experience for restaurants and cafés. It combines appetite-focused food photography, product customization, table-aware QR ordering, a cart and order-confirmation flow, and a lightweight kitchen and manager dashboard.
 
 The current application is a client-side prototype powered by mock catalog, store, and order data. It is designed as a polished foundation for a production menu system; persistence, authentication, payment processing, and server-side order delivery are intentionally outside the current scope.
 
@@ -9,10 +9,11 @@ The current application is a client-side prototype powered by mock catalog, stor
 | Capability | Description |
 | --- | --- |
 | Product discovery | Browse categories and move through a focused, vertical product experience. |
-| 3D and AR | Open supported products in an interactive `<model-viewer>` experience with WebXR, Scene Viewer, and Quick Look modes where available. |
-| Customization | Choose product options, add notes, and calculate option-based prices before adding an item to the cart. |
+| Food presentation | Display real product photography inside premium, appetite-focused visual panels and product cards. |
+| Customization | Remove included ingredients, add optional toppings, add notes, and calculate option-based prices before adding an item to the cart. |
 | Ordering flow | Manage quantities, choose dine-in or takeaway, select a payment method, and receive a live order confirmation view. |
-| Manager dashboard | Review mock kitchen orders, update statuses, adjust product availability and prices, and edit store information. |
+| Table QR ordering | Generate a separate QR code for each table and assign the table automatically to dine-in orders. |
+| Manager dashboard | Review mock kitchen orders, update statuses, adjust product availability and prices, manage table QR codes, and edit store information. |
 | Arabic-first UI | Arabic RTL is the default, with an English toggle and synchronized document language and direction. |
 
 ## Tech stack
@@ -52,7 +53,7 @@ Open `http://localhost:3000` in a browser. The app does not require a local API 
 ├── .github/workflows/ci.yml  # Node 24 CI: install, type-check, build
 ├── public/                    # Small public web assets and metadata
 ├── src/
-│   ├── components/            # Product, cart, order, dashboard, and 3D UI
+│   ├── components/            # Product, cart, order, dashboard, and QR UI
 │   ├── data/                  # Mock catalog, store, and order data
 │   ├── utils/                 # Shared browser utilities
 │   ├── App.tsx                # Application state and screen flow
@@ -70,11 +71,11 @@ Every push to `main` or `master`, every pull request targeting those branches, a
 
 ## Deployment
 
-The production site is deployed automatically to [GitHub Pages](https://nadjimlab.github.io/Menu3d/) whenever a change is pushed to `main`. The deployment workflow builds the Vite bundle, uploads `dist/` as a Pages artifact, and publishes it through the official GitHub Pages deployment actions. Vite uses `/Menu3d/` as its production base path and `/` during local development, so assets resolve correctly in both environments.
+The production site is deployed automatically to [GitHub Pages](https://nadjimlab.github.io/Menu3d/) whenever a change is pushed to `main`. The deployment workflow builds the Vite bundle, uploads `dist/` as a Pages artifact, and publishes it through the official GitHub Pages deployment actions. Vite uses `/Menu3d/` as its production base path and `/` during local development, so assets resolve correctly in both environments. The customer route accepts `?table=04&mode=dine-in`; the mock admin dashboard is isolated behind `?admin=1` and is not linked from the public customer interface.
 
 ## Data and external services
 
-The demo catalog references remote Unsplash images and public sample GLB/USDZ models from `modelviewer.dev`. These resources are suitable for demonstration only. Before production use, replace them with licensed, versioned assets and connect the order flow to a protected backend.
+The demo catalog references remote Unsplash images. These resources are suitable for demonstration only; before production use, replace them with licensed, versioned assets and connect the order flow to a protected backend.
 
 ## Production roadmap
 
