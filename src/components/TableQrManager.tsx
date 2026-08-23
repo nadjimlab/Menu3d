@@ -9,6 +9,8 @@ interface TableQrManagerProps {
 
 const buildTableUrl = (tableId: string) => {
   const url = new URL(window.location.href);
+  const basePath = import.meta.env.BASE_URL;
+  url.pathname = basePath;
   url.hash = '';
   url.searchParams.delete('admin');
   url.searchParams.set('table', tableId);

@@ -71,7 +71,7 @@ Every push to `main` or `master`, every pull request targeting those branches, a
 
 ## Deployment
 
-The production site is deployed automatically to [GitHub Pages](https://nadjimlab.github.io/Menu3d/) whenever a change is pushed to `main`. The deployment workflow builds the Vite bundle, uploads `dist/` as a Pages artifact, and publishes it through the official GitHub Pages deployment actions. Vite uses `/Menu3d/` as its production base path and `/` during local development, so assets resolve correctly in both environments. The customer route accepts `?table=04&mode=dine-in`; the mock admin dashboard is isolated behind `?admin=1` and is not linked from the public customer interface.
+The production site is deployed automatically to [GitHub Pages](https://nadjimlab.github.io/Menu3d/) whenever a change is pushed to `main`. The deployment workflow builds the Vite bundle, uploads `dist/` as a Pages artifact, and publishes it through the official GitHub Pages deployment actions. Vite uses `/Menu3d/` as its production base path and `/` during local development, so assets resolve correctly in both environments. The customer route accepts `?table=04&mode=dine-in`; when no table is supplied, the public demo displays a selector for tables 01, 04, 07, and 12. The admin dashboard is isolated behind the direct `/admin` path and is not linked from the public customer interface.
 
 ## Data and external services
 

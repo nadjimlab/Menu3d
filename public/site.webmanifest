@@ -1,7 +1,7 @@
 {
-  "name": "DigiMenu 3D",
+  "name": "DigiMenu",
   "short_name": "DigiMenu",
-  "description": "تجربة قائمة رقمية تفاعلية ثلاثية الأبعاد",
+  "description": "منيو رقمية احترافية وطلبات QR لكل طاولة",
   "lang": "ar",
   "dir": "rtl",
   "display": "standalone",

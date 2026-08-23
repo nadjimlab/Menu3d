@@ -1,10 +1,13 @@
 import React from 'react';
 import { QrCode, RotateCcw, UtensilsCrossed, Globe, Sparkles, Clock, ChefHat } from 'lucide-react';
 import { StoreInfo, OrderDetails } from '../types';
+import { RESTAURANT_TABLES } from '../data/mockData';
 
 interface QRSimulatorBarProps {
   storeInfo: StoreInfo;
   onUpdateDiningMode: (mode: 'dine-in' | 'takeaway') => void;
+  onUpdateTable?: (table: string) => void;
+  allowTableSelection?: boolean;
   onResetToIntro: () => void;
   lang: 'ar' | 'en';
   onToggleLang: () => void;
@@ -15,6 +18,8 @@ interface QRSimulatorBarProps {
 export const QRSimulatorBar: React.FC<QRSimulatorBarProps> = ({
   storeInfo,
   onUpdateDiningMode,
+  onUpdateTable,
+  allowTableSelection = false,
   onResetToIntro,
   lang,
   onToggleLang,
@@ -55,9 +60,26 @@ export const QRSimulatorBar: React.FC<QRSimulatorBarProps> = ({
         </div>
 
         {storeInfo.diningMode === 'dine-in' && (
-          <span className="rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-bold text-emerald-300">
-            {isAr ? `طاولة ${storeInfo.tableNumber} من QR` : `Table ${storeInfo.tableNumber} via QR`}
-          </span>
+          allowTableSelection && onUpdateTable ? (
+            <label className="inline-flex items-center gap-1.5 rounded-lg border border-amber-500/25 bg-amber-500/10 px-2 py-0.5 text-[11px] font-bold text-amber-300">
+              <span>{isAr ? 'اختر الطاولة' : 'Choose table'}</span>
+              <select
+                value={storeInfo.tableNumber}
+                onChange={(event) => onUpdateTable(event.target.value)}
+                className="bg-transparent text-amber-200 outline-none"
+              >
+                {RESTAURANT_TABLES.map((table) => (
+                  <option key={table.id} value={table.id} className="bg-neutral-900 text-white">
+                    {isAr ? `${table.label} • ${table.zone}` : `${table.labelEn} • ${table.zoneEn}`}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : (
+            <span className="rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-bold text-emerald-300">
+              {isAr ? `طاولة ${storeInfo.tableNumber} من QR` : `Table ${storeInfo.tableNumber} via QR`}
+            </span>
+          )
         )}
 
         {/* Floating Active Order Tracker Indicator */}

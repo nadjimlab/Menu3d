@@ -2,7 +2,7 @@
   "name": "menu3d",
   "private": true,
   "version": "1.0.0",
-  "description": "Interactive 3D digital menu experience for restaurants and cafés.",
+  "description": "Arabic-first digital menu and QR table ordering experience for restaurants and cafés.",
   "license": "MIT",
   "type": "module",
   "engines": {
@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
-    "build": "vite build",
+    "build": "vite build && node scripts/create-admin-entry.mjs",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "npm run typecheck",

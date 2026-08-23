@@ -22,13 +22,15 @@ import { sounds } from './utils/soundEffects';
 
 export default function App() {
   const [lang, setLang] = useState<'ar' | 'en'>('ar');
-  const tableFromQr = new URLSearchParams(window.location.search).get('table');
-  const modeFromQr = new URLSearchParams(window.location.search).get('mode');
-  const initialTable = RESTAURANT_TABLES.some((table) => table.id === tableFromQr)
-    ? tableFromQr!
-    : STORE_INFO.tableNumber;
+  const searchParams = new URLSearchParams(window.location.search);
+  const tableFromQr = searchParams.get('table');
+  const modeFromQr = searchParams.get('mode');
+  const hasQrTable = RESTAURANT_TABLES.some((table) => table.id === tableFromQr);
+  const initialTable = hasQrTable ? tableFromQr! : STORE_INFO.tableNumber;
   const initialDiningMode = modeFromQr === 'takeaway' ? 'takeaway' : STORE_INFO.diningMode;
-  const isAdminRoute = new URLSearchParams(window.location.search).get('admin') === '1';
+  const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+  const normalizedPath = window.location.pathname.replace(/\/$/, '') || '/';
+  const isAdminRoute = searchParams.get('admin') === '1' || normalizedPath === `${basePath}/admin`;
   const [storeInfo, setStoreInfo] = useState<StoreInfo>(() => ({
     ...STORE_INFO,
     tableNumber: initialTable,
@@ -273,6 +275,8 @@ export default function App() {
         <QRSimulatorBar
           storeInfo={storeInfo}
           onUpdateDiningMode={(mode) => setStoreInfo((s) => ({ ...s, diningMode: mode }))}
+          onUpdateTable={(table) => setStoreInfo((s) => ({ ...s, tableNumber: table }))}
+          allowTableSelection={!hasQrTable}
           onResetToIntro={() => setCurrentScreen('intro')}
           lang={lang}
           onToggleLang={() => setLang((l) => (l === 'ar' ? 'en' : 'ar'))}
@@ -366,7 +370,10 @@ export default function App() {
                 onUpdateProductPrice={handleUpdateProductPrice}
                 storeInfo={storeInfo}
                 onUpdateStoreInfo={handleUpdateStoreInfo}
-                onCloseDashboard={() => setCurrentScreen('discovery')}
+                onCloseDashboard={() => {
+                  window.history.replaceState({}, '', `${basePath || ''}/`);
+                  setCurrentScreen('discovery');
+                }}
                 lang={lang}
               />
             </motion.div>
