@@ -6,6 +6,7 @@ import {
   Globe2,
   Layers3,
   MessageCircle,
+  MapPin,
   Palette,
   QrCode,
   ScanLine,
@@ -20,12 +21,13 @@ type Language = 'ar' | 'fr' | 'en';
 
 const copy = {
   ar: {
-    navPlatform: 'المنصة', navSectors: 'القطاعات', navDemo: 'تجربة مباشرة', navAdmin: 'دخول الإدارة',
+    navPlatform: 'المنصة', navSectors: 'القطاعات', navStores: 'المتاجر', navDemo: 'تجربة مباشرة', navAdmin: 'دخول الإدارة',
     eyebrow: 'تجربة المنتج تبدأ من QR',
     title: 'اجعل كل منتج يُرى قبل أن يُشترى.',
     subtitle: 'Showly يحوّل رمز QR إلى تجربة تفاعلية أنيقة تعرض منتجاتك وخدماتك، وتقرّب العميل من قرار الشراء في لحظات.',
     primary: 'شاهد تجربة متجر', secondary: 'استكشف المنصة',
     live: 'تجربة حية', views: 'زيارة هذا الشهر', interactions: 'تفاعلات العملاء',
+    storesTitle: 'اكتشف المتاجر التي تعمل على Showly.', storesText: 'كل متجر يملك تجربة مستقلة، هوية خاصة ورابطاً ثابتاً يمكن مشاركته أو تحويله إلى QR Code.', openStoreLabel: 'فتح المتجر',
     platformTitle: 'واجهة واحدة، لكل نشاط تجاري.',
     platformText: 'من قائمة مطعم إلى كتالوج أزياء أو معرض أثاث؛ كل متجر يحصل على صفحة سريعة تحمل هويته وبياناته وروابطه.',
     sectorsTitle: 'مصمم ليعمل مع طريقة بيعك.',
@@ -41,12 +43,13 @@ const copy = {
     footer: 'Showly — Interactive Product Experience', admin: 'لوحة الإدارة', language: 'اللغة',
   },
   fr: {
-    navPlatform: 'Plateforme', navSectors: 'Secteurs', navDemo: 'Démo en direct', navAdmin: 'Administration',
+    navPlatform: 'Plateforme', navSectors: 'Secteurs', navStores: 'Boutiques', navDemo: 'Démo en direct', navAdmin: 'Administration',
     eyebrow: 'L’expérience produit commence par un QR',
     title: 'Faites voir chaque produit avant de le vendre.',
     subtitle: 'Showly transforme un QR code en une expérience interactive et élégante pour présenter vos produits et services.',
     primary: 'Voir une boutique', secondary: 'Découvrir la plateforme',
     live: 'Démo en direct', views: 'visites ce mois', interactions: 'interactions',
+    storesTitle: 'Découvrez les boutiques Showly.', storesText: 'Chaque boutique possède son expérience, son identité et son lien permanent à partager ou transformer en QR code.', openStoreLabel: 'Ouvrir la boutique',
     platformTitle: 'Une interface pour chaque activité.',
     platformText: 'Menu de restaurant, catalogue de mode ou showroom mobilier : chaque boutique garde son identité et ses données.',
     sectorsTitle: 'Pensé pour votre façon de vendre.',
@@ -62,12 +65,13 @@ const copy = {
     footer: 'Showly — Interactive Product Experience', admin: 'Administration', language: 'Langue',
   },
   en: {
-    navPlatform: 'Platform', navSectors: 'Sectors', navDemo: 'Live demo', navAdmin: 'Admin access',
+    navPlatform: 'Platform', navSectors: 'Sectors', navStores: 'Stores', navDemo: 'Live demo', navAdmin: 'Admin access',
     eyebrow: 'The product experience starts with a QR',
     title: 'Let every product be seen before it is sold.',
     subtitle: 'Showly turns a QR code into a polished interactive experience for presenting products and services and moving customers closer to action.',
     primary: 'View a live store', secondary: 'Explore the platform',
     live: 'Live demo', views: 'visits this month', interactions: 'customer interactions',
+    storesTitle: 'Explore the stores powered by Showly.', storesText: 'Every store gets its own experience, identity, and permanent link ready to share or turn into a QR code.', openStoreLabel: 'Open store',
     platformTitle: 'One interface, every business.',
     platformText: 'From a restaurant menu to a fashion catalog or furniture showroom, every store keeps its own identity, content, and links.',
     sectorsTitle: 'Built around how you sell.',
@@ -102,9 +106,21 @@ export function ShowlyLanding() {
     document.title = 'Showly — Interactive Product Experience';
   }, [isAr, lang]);
 
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   const openStore = () => {
-    const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-    window.location.href = `${base}/?store=maison-du-delice`;
+    window.location.href = `${base}/s/${SHOWLY_STORES[0].slug}`;
+  };
+  const storeUrl = (slug: string) => `${base}/s/${slug}`;
+  const storeName = (store: (typeof SHOWLY_STORES)[number]) => lang === 'ar' ? store.name : lang === 'fr' ? store.nameFr : store.nameEn;
+  const storeDescription = (store: (typeof SHOWLY_STORES)[number]) => lang === 'ar' ? store.description : lang === 'fr' ? store.descriptionFr : store.descriptionEn;
+  const storeCity = (store: (typeof SHOWLY_STORES)[number]) => lang === 'ar' ? store.city : store.cityEn;
+  const industryLabel = (industry: (typeof SHOWLY_STORES)[number]['industry']) => {
+    const labels = {
+      ar: { cafe: 'مقهى', fashion: 'أزياء', furniture: 'أثاث' },
+      fr: { cafe: 'Café', fashion: 'Mode', furniture: 'Mobilier' },
+      en: { cafe: 'Café', fashion: 'Fashion', furniture: 'Furniture' },
+    } as const;
+    return labels[lang][industry];
   };
 
   return (
@@ -116,6 +132,7 @@ export function ShowlyLanding() {
           <span><strong className="block text-lg tracking-tight">Showly</strong><small className="block text-[9px] uppercase tracking-[.32em] text-white/40">Interactive Product Experience</small></span>
         </a>
         <div className="hidden items-center gap-7 text-sm text-white/55 md:flex">
+          <a href="#stores" className="transition hover:text-white">{t.navStores}</a>
           <a href="#platform" className="transition hover:text-white">{t.navPlatform}</a>
           <a href="#sectors" className="transition hover:text-white">{t.navSectors}</a>
           <button type="button" onClick={openStore} className="transition hover:text-white">{t.navDemo}</button>
@@ -149,6 +166,8 @@ export function ShowlyLanding() {
             </div>
           </div>
         </section>
+
+        <section id="stores" className="mx-auto max-w-7xl scroll-mt-10 px-5 py-20 lg:px-8 lg:py-28"><div className="flex flex-col justify-between gap-6 md:flex-row md:items-end"><div><span className="text-xs font-bold uppercase tracking-[.28em] text-[#d9ff58]">00 / {t.navStores}</span><h2 className="mt-5 max-w-3xl text-4xl font-black tracking-[-.04em] sm:text-6xl">{t.storesTitle}</h2></div><p className="max-w-xl text-base leading-8 text-white/50">{t.storesText}</p></div><div className="mt-12 grid gap-4 md:grid-cols-3">{SHOWLY_STORES.map((store) => <a key={store.id} href={storeUrl(store.slug)} className="group overflow-hidden rounded-[1.7rem] border border-white/10 bg-white/[.035] transition hover:-translate-y-1 hover:border-[#d9ff58]/45 hover:bg-white/[.06]"><div className="relative aspect-[1.35] overflow-hidden"><img src={store.coverImage} alt={storeName(store)} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /><div className="absolute inset-0 bg-gradient-to-t from-[#08090d] via-[#08090d]/15 to-transparent" /><span className="absolute right-4 top-4 rounded-full bg-[#d9ff58] px-3 py-1 text-[10px] font-bold text-[#11140d]">{industryLabel(store.industry)}</span><span className="absolute bottom-4 left-4 grid h-10 w-10 place-items-center rounded-xl border border-white/20 bg-black/25 text-[#d9ff58] backdrop-blur-md"><ArrowUpRight className="h-4 w-4" /></span></div><div className="p-5"><div className="flex items-start justify-between gap-4"><div><h3 className="text-xl font-black">{storeName(store)}</h3><p className="mt-2 text-sm leading-6 text-white/45">{storeDescription(store)}</p></div><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl font-black text-[#11140d]" style={{ backgroundColor: store.accent }}>{store.logoMark}</span></div><div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4 text-xs text-white/40"><span className="inline-flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-[#d9ff58]" />{storeCity(store)}</span><span className="font-semibold text-[#d9ff58]">{t.openStoreLabel}</span></div></div></a>)}</div></section>
 
         <section id="platform" className="mx-auto max-w-7xl scroll-mt-10 px-5 py-20 lg:px-8 lg:py-28"><div className="grid gap-10 lg:grid-cols-[.8fr_1.2fr] lg:items-end"><div><span className="text-xs font-bold uppercase tracking-[.28em] text-[#d9ff58]">01 / {t.navPlatform}</span><h2 className="mt-5 text-4xl font-black tracking-[-.04em] sm:text-6xl">{t.platformTitle}</h2></div><p className="max-w-xl text-base leading-8 text-white/50">{t.platformText}</p></div><div className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{t.features.map(([title, text, Icon]) => <article key={title} className="group rounded-3xl border border-white/10 bg-white/[.035] p-6 transition hover:-translate-y-1 hover:border-[#d9ff58]/35 hover:bg-[#d9ff58]/[.05]"><div className="mb-12 grid h-11 w-11 place-items-center rounded-2xl bg-[#d9ff58]/10 text-[#d9ff58]"><Icon className="h-5 w-5" /></div><h3 className="text-lg font-bold">{title}</h3><p className="mt-3 text-sm leading-7 text-white/45">{text}</p></article>)}</div></section>
 
