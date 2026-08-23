@@ -2,22 +2,34 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>DigiMenu — تجربة اكتشاف المنتجات الفاخرة</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0d0d11" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="application-name" content="DigiMenu" />
     <meta name="description" content="تجربة استكشاف وطلب تفاعلية سينمائية للمطاعم والمقاهي العصرية" />
-    <!-- Google Fonts for Luxury Arabic & Latin Typography -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <title>DigiMenu — تجربة اكتشاف المنتجات الفاخرة</title>
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ar_AR" />
+    <meta property="og:title" content="DigiMenu — تجربة اكتشاف المنتجات" />
+    <meta property="og:description" content="تجربة تفاعلية سينمائية لاستكشاف المأكولات والمشروبات" />
+    <meta property="og:site_name" content="DigiMenu" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="DigiMenu — تجربة اكتشاف المنتجات" />
+    <meta name="twitter:description" content="تجربة تفاعلية سينمائية لاستكشاف المأكولات والمشروبات" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet" />
-    <!-- Google Model Viewer for 3D & WebXR / QuickLook AR -->
+
+    <!-- Interactive 3D and WebXR / Quick Look support. -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
-    <meta property="og:title" content="DigiMenu — تجربة اكتشاف المنتجات" />
-    <meta property="og:description" content="تجربة تفاعلية سينمائية لاستكشاف المأكولات والمشروبات" />
-    <meta name="theme-color" content="#0d0d11" />
   </head>
   <body class="bg-[#0b0b0f] text-neutral-100 font-['Tajawal',sans-serif] antialiased overflow-x-hidden selection:bg-amber-500/30 selection:text-amber-200">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

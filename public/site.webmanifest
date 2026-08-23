@@ -1,0 +1,19 @@
+{
+  "name": "DigiMenu 3D",
+  "short_name": "DigiMenu",
+  "description": "تجربة قائمة رقمية تفاعلية ثلاثية الأبعاد",
+  "lang": "ar",
+  "dir": "rtl",
+  "display": "standalone",
+  "start_url": "/",
+  "background_color": "#0b0b0f",
+  "theme_color": "#0d0d11",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
