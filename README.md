@@ -68,6 +68,10 @@ Open `http://localhost:3000` in a browser. The app does not require a local API 
 
 Every push to `main` or `master`, every pull request targeting those branches, and every manual dispatch runs the workflow in `.github/workflows/ci.yml`. The workflow uses read-only repository permissions, cancels obsolete runs, installs with `npm ci`, runs `npm run typecheck`, builds the production bundle, and verifies that `dist/index.html` exists.
 
+## Deployment
+
+The production site is deployed automatically to [GitHub Pages](https://nadjimlab.github.io/Menu3d/) whenever a change is pushed to `main`. The deployment workflow builds the Vite bundle, uploads `dist/` as a Pages artifact, and publishes it through the official GitHub Pages deployment actions. Vite uses `/Menu3d/` as its production base path and `/` during local development, so assets resolve correctly in both environments.
+
 ## Data and external services
 
 The demo catalog references remote Unsplash images and public sample GLB/USDZ models from `modelviewer.dev`. These resources are suitable for demonstration only. Before production use, replace them with licensed, versioned assets and connect the order flow to a protected backend.
